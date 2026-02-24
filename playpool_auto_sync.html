@@ -3313,7 +3313,7 @@
                 statusDiv.innerHTML = '⏳ Шаг 2/3: Загрузка программ лояльности из iiko...';
 
                 // ШАГ 2: Получаем список программ лояльности
-                const programsResponse = await fetch('/api/iiko/loyalty/iiko/programs', {
+                const programsResponse = await fetch('/api/iiko/loyalty/iiko/program', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -3402,7 +3402,7 @@
                 
                 statusDiv.innerHTML = '⏳ Шаг 1/2: Получение программы лояльности...';
                 
-                const programsResponse = await fetch('/api/iiko/loyalty/iiko/programs', {
+                const programsResponse = await fetch('/api/iiko/loyalty/iiko/program', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -3419,12 +3419,17 @@
                 }
 
                 const programsData = await programsResponse.json();
+                console.log('Loyalty programs response:', JSON.stringify(programsData));
 
-                if (!programsData.programs || programsData.programs.length === 0) {
-                    throw new Error('В вашей организации нет программ лояльности. Создайте программу в iiko Cloud.');
+                // iiko API может вернуть programs или просто массив
+                const programs = programsData.programs || programsData;
+                const programsList = Array.isArray(programs) ? programs : [];
+
+                if (programsList.length === 0) {
+                    throw new Error('В вашей организации нет программ лояльности. Создайте программу в iiko Cloud. (Ответ API: ' + JSON.stringify(programsData).substring(0, 200) + ')');
                 }
 
-                const loyaltyProgram = programsData.programs[0];
+                const loyaltyProgram = programsList[0];
                 const programId = loyaltyProgram.id;
                 
                 statusDiv.innerHTML = '⏳ Шаг 2/2: Загрузка участников программы лояльности...';
