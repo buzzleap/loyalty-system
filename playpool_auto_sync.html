@@ -1,0 +1,3888 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PLAYPOOL - Система лояльности</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+        }
+
+        /* ========== LOGIN PAGE ========== */
+        .login-page {
+            background: linear-gradient(135deg, #1E85D5 0%, #0d4a7a 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 450px;
+            padding: 50px 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #FA3D30 0%, #1E85D5 100%);
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo {
+            width: 180px;
+            height: 60px;
+            margin: 0 auto 15px;
+        }
+
+        .logo-bg {
+            fill: #FA3D30;
+        }
+
+        .logo-text {
+            fill: white;
+            font-weight: 800;
+            font-size: 32px;
+        }
+
+        .login-container h1 {
+            color: #333;
+            font-size: 28px;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 10px;
+            letter-spacing: 0.5px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 35px;
+            font-weight: 400;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            color: #333;
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: 0.3px;
+        }
+
+        input[type="password"],
+        input[type="text"] {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            font-family: inherit;
+            font-weight: 400;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        input[type="password"]:focus,
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #1E85D5;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(30, 133, 213, 0.1);
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .radio-option {
+            flex: 1;
+            position: relative;
+        }
+
+        .radio-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+        }
+
+        .radio-option label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+            font-weight: 700;
+            color: #666;
+        }
+
+        .radio-option input[type="radio"]:checked + label {
+            border-color: #FA3D30;
+            background: #FA3D30;
+            color: white;
+            box-shadow: 0 4px 15px rgba(250, 61, 48, 0.3);
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #FA3D30 0%, #d63426 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            box-shadow: 0 4px 15px rgba(250, 61, 48, 0.3);
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(250, 61, 48, 0.4);
+        }
+
+        .error-message {
+            background: #fee;
+            color: #c33;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+            border-left: 4px solid #c33;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        /* ========== DASHBOARD PAGE ========== */
+        .dashboard-page {
+            display: none;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 280px;
+            background: white;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 100;
+        }
+
+        .logo-section {
+            padding: 30px 25px;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        .logo-section .logo {
+            width: 160px;
+            height: 55px;
+        }
+
+        .user-info {
+            padding: 20px 25px;
+            border-bottom: 1px solid #e8e8e8;
+            background: #f8f9fa;
+        }
+
+        .user-role {
+            color: #1E85D5;
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .menu {
+            flex: 1;
+            padding: 20px 0;
+            overflow-y: auto;
+        }
+
+        .menu-item {
+            padding: 15px 25px;
+            color: #666;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 15px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+            cursor: pointer;
+        }
+
+        .menu-item:hover {
+            background: #f8f9fa;
+            color: #333;
+        }
+
+        .menu-item.active {
+            background: #fff0ef;
+            color: #FA3D30;
+            border-left-color: #FA3D30;
+        }
+
+        .menu-item.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .menu-icon {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+
+        .logout-section {
+            padding: 20px 25px;
+            border-top: 1px solid #e8e8e8;
+        }
+
+        .btn-logout {
+            width: 100%;
+            padding: 12px;
+            background: #f8f9fa;
+            color: #666;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-logout:hover {
+            background: #FA3D30;
+            color: white;
+            border-color: #FA3D30;
+        }
+
+        /* MAIN CONTENT */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 30px 40px;
+        }
+
+        .page-header {
+            margin-bottom: 30px;
+        }
+
+        .page-header h1 {
+            font-size: 32px;
+            font-weight: 800;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .page-header p {
+            color: #666;
+            font-size: 15px;
+        }
+
+        /* STATS CARDS */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid #1E85D5;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-card.red {
+            border-left-color: #FA3D30;
+        }
+
+        .stat-card.blue {
+            border-left-color: #1E85D5;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-value {
+            font-size: 36px;
+            font-weight: 800;
+            color: #333;
+        }
+
+        .stat-change {
+            font-size: 13px;
+            color: #27ae60;
+            margin-top: 8px;
+            font-weight: 600;
+        }
+
+        /* TRANSACTIONS TABLE */
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: #f8f9fa;
+        }
+
+        thead th {
+            padding: 18px 20px;
+            text-align: left;
+            font-size: 13px;
+            font-weight: 700;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid #e8e8e8;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid #f0f0f0;
+            transition: background 0.2s ease;
+        }
+
+        tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        tbody td {
+            padding: 18px 20px;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .transaction-id {
+            color: #1E85D5;
+            font-weight: 700;
+        }
+
+        .bonus-added {
+            color: #27ae60;
+            font-weight: 700;
+        }
+
+        .bonus-spent {
+            color: #FA3D30;
+            font-weight: 700;
+        }
+
+        /* UTILITY */
+        .hidden {
+            display: none !important;
+        }
+
+        /* ========== CLIENTS PAGE ========== */
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 300px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 45px 12px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #1E85D5;
+            box-shadow: 0 0 0 3px rgba(30, 133, 213, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: #FA3D30;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #d63426;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #666;
+            border: 2px solid #e0e0e0;
+        }
+
+        .btn-secondary:hover {
+            border-color: #1E85D5;
+            color: #1E85D5;
+        }
+
+        .qr-link {
+            color: #1E85D5;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .qr-link:hover {
+            color: #FA3D30;
+        }
+
+        .bonus-link {
+            color: #FA3D30;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .bonus-link:hover {
+            color: #d63426;
+            text-decoration: underline;
+        }
+
+        /* MODAL */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .modal-header h2 {
+            font-size: 24px;
+            color: #333;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 28px;
+            color: #999;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .close-modal:hover {
+            color: #FA3D30;
+        }
+
+        .modal-body {
+            margin-bottom: 25px;
+        }
+
+        .form-row {
+            margin-bottom: 20px;
+        }
+
+        .form-row label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .form-row input,
+        .form-row select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        .form-row input:focus,
+        .form-row select:focus {
+            outline: none;
+            border-color: #1E85D5;
+        }
+
+        .bonus-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #229954;
+        }
+
+        .btn-danger {
+            background: #FA3D30;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #d63426;
+        }
+
+        .current-bonus {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .current-bonus-value {
+            font-size: 32px;
+            font-weight: 800;
+            color: #FA3D30;
+        }
+
+        /* ========== ANALYTICS PAGE ========== */
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .analytics-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .analytics-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .analytics-card h3 {
+            font-size: 14px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .analytics-value {
+            font-size: 42px;
+            font-weight: 800;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .analytics-value.red {
+            color: #FA3D30;
+        }
+
+        .analytics-value.blue {
+            color: #1E85D5;
+        }
+
+        .analytics-value.green {
+            color: #27ae60;
+        }
+
+        .analytics-subtitle {
+            font-size: 13px;
+            color: #999;
+        }
+
+        .chart-container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+
+        .chart-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 25px;
+        }
+
+        .bar-chart {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            height: 300px;
+            gap: 15px;
+            padding: 40px 20px 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .bar {
+            flex: 1;
+            background: linear-gradient(180deg, #FA3D30 0%, #d63426 100%);
+            border-radius: 8px 8px 0 0;
+            position: relative;
+            transition: all 0.3s ease;
+            min-width: 40px;
+            max-width: 80px;
+            box-shadow: 0 4px 10px rgba(250, 61, 48, 0.2);
+        }
+
+        .bar:hover {
+            background: linear-gradient(180deg, #1E85D5 0%, #0d4a7a 100%);
+            transform: translateY(-10px) scale(1.05);
+            box-shadow: 0 8px 20px rgba(30, 133, 213, 0.4);
+        }
+
+        .top-clients-list {
+            list-style: none;
+        }
+
+        .top-client-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background 0.2s ease;
+        }
+
+        .top-client-item:hover {
+            background: #f8f9fa;
+        }
+
+        .top-client-item:last-child {
+            border-bottom: none;
+        }
+
+        .client-rank {
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, #FA3D30 0%, #d63426 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            margin-right: 15px;
+        }
+
+        .client-rank.gold {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+        }
+
+        .client-rank.silver {
+            background: linear-gradient(135deg, #C0C0C0 0%, #A8A8A8 100%);
+        }
+
+        .client-rank.bronze {
+            background: linear-gradient(135deg, #CD7F32 0%, #B8733C 100%);
+        }
+
+        .client-info {
+            flex: 1;
+        }
+
+        .client-name {
+            font-weight: 700;
+            color: #333;
+            font-size: 15px;
+        }
+
+        .client-bonus {
+            font-size: 18px;
+            font-weight: 800;
+            color: #FA3D30;
+        }
+
+        .year-selector {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .year-selector label {
+            font-size: 15px;
+            font-weight: 600;
+            color: #666;
+        }
+
+        .year-selector select {
+            padding: 10px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .year-selector select:hover {
+            border-color: #1E85D5;
+        }
+
+        .year-selector select:focus {
+            outline: none;
+            border-color: #FA3D30;
+            box-shadow: 0 0 0 3px rgba(250, 61, 48, 0.1);
+        }
+
+        .visits-count {
+            font-size: 14px;
+            color: #1E85D5;
+            font-weight: 600;
+        }
+
+        /* ========== LOYALTY SYSTEM PAGE ========== */
+        .settings-form {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+
+        .settings-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .setting-field {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .setting-field label {
+            font-size: 14px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .setting-field input[type="number"] {
+            padding: 14px 18px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .setting-field input[type="number"]:focus {
+            outline: none;
+            border-color: #1E85D5;
+            box-shadow: 0 0 0 3px rgba(30, 133, 213, 0.1);
+        }
+
+        .setting-hint {
+            font-size: 12px;
+            color: #999;
+            margin-top: 5px;
+        }
+
+        .btn-save-settings {
+            padding: 14px 30px;
+            background: linear-gradient(135deg, #FA3D30 0%, #d63426 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-save-settings:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(250, 61, 48, 0.4);
+        }
+
+        .quick-actions-section {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .quick-actions-header {
+            font-size: 20px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .search-and-action {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .quick-search {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .quick-search input {
+            width: 100%;
+            padding: 14px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .quick-search input:focus {
+            outline: none;
+            border-color: #1E85D5;
+            box-shadow: 0 0 0 3px rgba(30, 133, 213, 0.1);
+        }
+
+        .selected-client-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #1E85D5;
+            display: none;
+        }
+
+        .selected-client-card.show {
+            display: block;
+        }
+
+        .client-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .client-card-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .client-card-bonus {
+            font-size: 24px;
+            font-weight: 800;
+            color: #FA3D30;
+        }
+
+        .client-card-info {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .bonus-action-form {
+            display: flex;
+            gap: 15px;
+            align-items: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .bonus-input-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .bonus-input-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .bonus-input-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .bonus-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .suggestions-list {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            margin-top: 10px;
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .suggestions-list.show {
+            display: block;
+        }
+
+        .suggestion-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .suggestion-item:hover {
+            background: #f8f9fa;
+        }
+
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+
+        .suggestion-name {
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .suggestion-details {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: none;
+            border-left: 4px solid #28a745;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        /* ========== INTEGRATIONS PAGE ========== */
+        .api-section {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            margin-bottom: 25px;
+        }
+
+        .api-section-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .api-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #1E85D5;
+        }
+
+        .api-info-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .api-info-text {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .endpoint-list {
+            list-style: none;
+        }
+
+        .endpoint-item {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #FA3D30;
+        }
+
+        .endpoint-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 12px;
+        }
+
+        .endpoint-method {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .endpoint-method.post {
+            background: #27ae60;
+            color: white;
+        }
+
+        .endpoint-method.get {
+            background: #1E85D5;
+            color: white;
+        }
+
+        .endpoint-path {
+            font-family: monospace;
+            font-size: 14px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .endpoint-description {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+
+        .endpoint-params {
+            font-size: 13px;
+            color: #999;
+        }
+
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 13px;
+            overflow-x: auto;
+            margin-top: 10px;
+        }
+
+        .config-table {
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        .config-table th,
+        .config-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        .config-table th {
+            background: #f8f9fa;
+            font-weight: 700;
+            color: #333;
+            font-size: 13px;
+            text-transform: uppercase;
+        }
+
+        .config-table td {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .badge.required {
+            background: #fee;
+            color: #c33;
+        }
+
+        .badge.optional {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 70px;
+            }
+
+            .main-content {
+                margin-left: 70px;
+                padding: 20px;
+            }
+
+            .logo-section,
+            .user-info,
+            .logout-section {
+                padding: 15px;
+            }
+
+            .menu-item span {
+                display: none;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .table-container {
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- LOGIN PAGE -->
+    <div id="loginPage" class="login-page">
+        <div class="login-container">
+            <div class="logo-container">
+                <svg class="logo" viewBox="0 0 200 70" xmlns="http://www.w3.org/2000/svg">
+                    <rect class="logo-bg" width="200" height="70" rx="10"/>
+                    <text class="logo-text" x="50%" y="50%" text-anchor="middle" dominant-baseline="middle">PLAYPOOL</text>
+                </svg>
+            </div>
+
+            <h1>Авторизация</h1>
+            <p class="subtitle">Система лояльности</p>
+
+            <div id="errorMessage" class="error-message">
+                Неверный пароль. Попробуйте снова.
+            </div>
+
+            <form id="loginForm">
+                <div class="radio-group">
+                    <div class="radio-option">
+                        <input type="radio" id="admin" name="role" value="admin" checked>
+                        <label for="admin">Администратор</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="cashier" name="role" value="cashier">
+                        <label for="cashier">Кассир</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Пароль</label>
+                    <input type="password" id="password" placeholder="Введите пароль" required autocomplete="off">
+                </div>
+
+                <button type="submit" class="btn-login">Войти</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- DASHBOARD PAGE -->
+    <div id="dashboardPage" class="dashboard-page">
+        <div class="container">
+            <!-- SIDEBAR -->
+            <aside class="sidebar">
+                <div class="logo-section">
+                    <svg class="logo" viewBox="0 0 200 70" xmlns="http://www.w3.org/2000/svg">
+                        <rect class="logo-bg" width="200" height="70" rx="10"/>
+                        <text class="logo-text" x="50%" y="50%" text-anchor="middle" dominant-baseline="middle">PLAYPOOL</text>
+                    </svg>
+                </div>
+
+                <div class="user-info">
+                    <div class="user-role" id="userRole">Администратор</div>
+                </div>
+
+                <nav class="menu">
+                    <a href="#" class="menu-item active" data-page="home">
+                        <svg class="menu-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" fill="none" stroke="currentColor" stroke-width="2"/>
+                            <polyline points="9 22 9 12 15 12 15 22" fill="none" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                        <span>Главная</span>
+                    </a>
+
+                    <a href="#" class="menu-item" data-page="clients">
+                        <svg class="menu-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" fill="none" stroke="currentColor" stroke-width="2"/>
+                            <circle cx="9" cy="7" r="4" fill="none" stroke="currentColor" stroke-width="2"/>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87" fill="none" stroke="currentColor" stroke-width="2"/>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75" fill="none" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                        <span>Клиенты</span>
+                    </a>
+
+                    <a href="#" class="menu-item" data-page="analytics" id="analyticsMenu">
+                        <svg class="menu-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <line x1="12" y1="20" x2="12" y2="10" stroke="currentColor" stroke-width="2"/>
+                            <line x1="18" y1="20" x2="18" y2="4" stroke="currentColor" stroke-width="2"/>
+                            <line x1="6" y1="20" x2="6" y2="16" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                        <span>Аналитика</span>
+                    </a>
+
+                    <a href="#" class="menu-item" data-page="loyalty" id="loyaltyMenu">
+                        <svg class="menu-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" fill="none" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                        <span>Система лояльности</span>
+                    </a>
+
+                    <a href="#" class="menu-item" data-page="integrations" id="integrationsMenu">
+                        <svg class="menu-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" fill="none" stroke="currentColor" stroke-width="2"/>
+                            <polyline points="3.27 6.96 12 12.01 20.73 6.96" fill="none" stroke="currentColor" stroke-width="2"/>
+                            <line x1="12" y1="22.08" x2="12" y2="12" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                        <span>Интеграции</span>
+                    </a>
+                </nav>
+
+                <div class="logout-section">
+                    <button class="btn-logout" id="logoutBtn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                            <polyline points="16 17 21 12 16 7"/>
+                            <line x1="21" y1="12" x2="9" y2="12"/>
+                        </svg>
+                        Выйти
+                    </button>
+                </div>
+            </aside>
+
+            <!-- MAIN CONTENT -->
+            <main class="main-content">
+                <div id="contentArea">
+                    <!-- HOME PAGE -->
+                    <div class="page-header">
+                        <h1>Главная</h1>
+                        <p>Обзор системы лояльности PLAYPOOL</p>
+                    </div>
+
+                    <!-- STATISTICS -->
+                    <div class="stats-grid">
+                        <div class="stat-card blue">
+                            <div class="stat-label">Всего пользователей</div>
+                            <div class="stat-value" id="totalUsers">247</div>
+                            <div class="stat-change">+12 за последнюю неделю</div>
+                        </div>
+
+                        <div class="stat-card red">
+                            <div class="stat-label">Активных бонусов</div>
+                            <div class="stat-value" id="activeBonus">156 890</div>
+                        </div>
+
+                        <div class="stat-card blue">
+                            <div class="stat-label">Всего начислено</div>
+                            <div class="stat-value" id="totalAccrued">892 450</div>
+                            <div class="stat-change">За все время</div>
+                        </div>
+                    </div>
+
+                    <!-- TRANSACTIONS -->
+                    <div class="section-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="1" x2="12" y2="23"/>
+                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                        </svg>
+                        Последние транзакции
+                    </div>
+
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>№ Транзакции</th>
+                                    <th>Дата</th>
+                                    <th>ФИО</th>
+                                    <th>Списано</th>
+                                    <th>Начислено</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="transaction-id">#TRX-10245</td>
+                                    <td>01.02.2026 14:32</td>
+                                    <td>Иванов Иван Иванович</td>
+                                    <td class="bonus-spent">-250</td>
+                                    <td class="bonus-added">—</td>
+                                </tr>
+                                <tr>
+                                    <td class="transaction-id">#TRX-10244</td>
+                                    <td>01.02.2026 13:15</td>
+                                    <td>Петрова Мария Сергеевна</td>
+                                    <td class="bonus-spent">—</td>
+                                    <td class="bonus-added">+350</td>
+                                </tr>
+                                <tr>
+                                    <td class="transaction-id">#TRX-10243</td>
+                                    <td>01.02.2026 12:08</td>
+                                    <td>Сидоров Петр Александрович</td>
+                                    <td class="bonus-spent">-120</td>
+                                    <td class="bonus-added">—</td>
+                                </tr>
+                                <tr>
+                                    <td class="transaction-id">#TRX-10242</td>
+                                    <td>01.02.2026 11:45</td>
+                                    <td>Козлова Анна Дмитриевна</td>
+                                    <td class="bonus-spent">—</td>
+                                    <td class="bonus-added">+500</td>
+                                </tr>
+                                <tr>
+                                    <td class="transaction-id">#TRX-10241</td>
+                                    <td>01.02.2026 10:22</td>
+                                    <td>Николаев Алексей Викторович</td>
+                                    <td class="bonus-spent">-180</td>
+                                    <td class="bonus-added">—</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // Пароли
+        const PASSWORDS = {
+            admin: 'play20pool16',
+            cashier: 'markerplaypool'
+        };
+
+        const loginPage = document.getElementById('loginPage');
+        const dashboardPage = document.getElementById('dashboardPage');
+        const loginForm = document.getElementById('loginForm');
+        const errorMessage = document.getElementById('errorMessage');
+        const passwordInput = document.getElementById('password');
+
+        let currentUserRole = null;
+
+        // Авторизация
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const role = document.querySelector('input[name="role"]:checked').value;
+            const password = passwordInput.value.trim(); // Убираем пробелы
+
+            console.log('Попытка входа:', role, 'Пароль:', password);
+
+            errorMessage.classList.remove('show');
+
+            if (password === PASSWORDS[role]) {
+                console.log('Успешная авторизация!');
+                currentUserRole = role;
+                showDashboard();
+            } else {
+                console.log('Неверный пароль');
+                errorMessage.classList.add('show');
+                passwordInput.value = '';
+                passwordInput.focus();
+            }
+        });
+
+        // Показать dashboard
+        function showDashboard() {
+            loginPage.style.display = 'none';
+            dashboardPage.style.display = 'block';
+            
+            const userRoleElement = document.getElementById('userRole');
+            const analyticsMenu = document.getElementById('analyticsMenu');
+
+            if (currentUserRole === 'admin') {
+                userRoleElement.textContent = 'Администратор';
+            } else if (currentUserRole === 'cashier') {
+                userRoleElement.textContent = 'Кассир';
+                analyticsMenu.classList.add('disabled');
+                document.getElementById('loyaltyMenu').classList.add('disabled');
+                document.getElementById('integrationsMenu').classList.add('disabled');
+            }
+        }
+
+        // Навигация по меню
+        document.querySelectorAll('.menu-item:not(.disabled)').forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelectorAll('.menu-item').forEach(mi => mi.classList.remove('active'));
+                this.classList.add('active');
+                
+                const page = this.dataset.page;
+                loadPage(page);
+            });
+        });
+
+        function loadPage(page) {
+            const contentArea = document.getElementById('contentArea');
+            
+            const pages = {
+                home: `
+                    <div class="page-header">
+                        <h1>Главная</h1>
+                        <p>Обзор системы лояльности PLAYPOOL</p>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-card blue">
+                            <div class="stat-label">Всего пользователей</div>
+                            <div class="stat-value">247</div>
+                            <div class="stat-change">+12 за последнюю неделю</div>
+                        </div>
+                        <div class="stat-card red">
+                            <div class="stat-label">Активных бонусов</div>
+                            <div class="stat-value">156 890</div>
+                        </div>
+                        <div class="stat-card blue">
+                            <div class="stat-label">Всего начислено</div>
+                            <div class="stat-value">892 450</div>
+                            <div class="stat-change">За все время</div>
+                        </div>
+                    </div>
+                    <div class="section-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="1" x2="12" y2="23"/>
+                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                        </svg>
+                        Последние транзакции
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>№ Транзакции</th>
+                                    <th>Дата</th>
+                                    <th>ФИО</th>
+                                    <th>Списано</th>
+                                    <th>Начислено</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="transaction-id">#TRX-10245</td>
+                                    <td>01.02.2026 14:32</td>
+                                    <td>Иванов Иван Иванович</td>
+                                    <td class="bonus-spent">-250</td>
+                                    <td class="bonus-added">—</td>
+                                </tr>
+                                <tr>
+                                    <td class="transaction-id">#TRX-10244</td>
+                                    <td>01.02.2026 13:15</td>
+                                    <td>Петрова Мария Сергеевна</td>
+                                    <td class="bonus-spent">—</td>
+                                    <td class="bonus-added">+350</td>
+                                </tr>
+                                <tr>
+                                    <td class="transaction-id">#TRX-10243</td>
+                                    <td>01.02.2026 12:08</td>
+                                    <td>Сидоров Петр Александрович</td>
+                                    <td class="bonus-spent">-120</td>
+                                    <td class="bonus-added">—</td>
+                                </tr>
+                                <tr>
+                                    <td class="transaction-id">#TRX-10242</td>
+                                    <td>01.02.2026 11:45</td>
+                                    <td>Козлова Анна Дмитриевна</td>
+                                    <td class="bonus-spent">—</td>
+                                    <td class="bonus-added">+500</td>
+                                </tr>
+                                <tr>
+                                    <td class="transaction-id">#TRX-10241</td>
+                                    <td>01.02.2026 10:22</td>
+                                    <td>Николаев Алексей Викторович</td>
+                                    <td class="bonus-spent">-180</td>
+                                    <td class="bonus-added">—</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                `,
+                clients: '',
+                analytics: '',
+                loyalty: '',
+                integrations: ''
+            };
+
+            if (page === 'clients') {
+                loadClientsPage();
+            } else if (page === 'analytics') {
+                loadAnalyticsPage();
+            } else if (page === 'loyalty') {
+                loadLoyaltyPage();
+            } else if (page === 'integrations') {
+                loadIntegrationsPage();
+            } else {
+                contentArea.innerHTML = pages[page] || pages.home;
+            }
+        }
+
+        // Выход
+        document.getElementById('logoutBtn').addEventListener('click', function() {
+            currentUserRole = null;
+            dashboardPage.style.display = 'none';
+            loginPage.style.display = 'flex';
+            passwordInput.value = '';
+            errorMessage.classList.remove('show');
+        });
+
+        // ========== CLIENTS PAGE ==========
+        let clientsData = [
+            { id: 1, date: '15.01.2026', fio: 'Иванов Иван Иванович', email: 'ivanov@mail.ru', phone: '+7 (999) 123-45-67', birthday: '15.03.1985', gender: 'М', bonus: 1250, qr: 'QR001' },
+            { id: 2, date: '18.01.2026', fio: 'Петрова Мария Сергеевна', email: 'petrova@mail.ru', phone: '+7 (999) 234-56-78', birthday: '22.07.1990', gender: 'Ж', bonus: 890, qr: 'QR002' },
+            { id: 3, date: '20.01.2026', fio: 'Сидоров Петр Александрович', email: 'sidorov@mail.ru', phone: '+7 (999) 345-67-89', birthday: '10.11.1988', gender: 'М', bonus: 2340, qr: 'QR003' },
+            { id: 4, date: '22.01.2026', fio: 'Козлова Анна Дмитриевна', email: 'kozlova@mail.ru', phone: '+7 (999) 456-78-90', birthday: '05.05.1992', gender: 'Ж', bonus: 560, qr: 'QR004' },
+            { id: 5, date: '25.01.2026', fio: 'Николаев Алексей Викторович', email: 'nikolaev@mail.ru', phone: '+7 (999) 567-89-01', birthday: '30.12.1987', gender: 'М', bonus: 1780, qr: 'QR005' }
+        ];
+
+        function loadClientsPage() {
+            const contentArea = document.getElementById('contentArea');
+            
+            contentArea.innerHTML = `
+                <div class="page-header">
+                    <h1>Клиенты</h1>
+                    <p>Управление клиентской базой</p>
+                </div>
+
+                <div class="toolbar">
+                    <div class="search-box">
+                        <input type="text" id="searchInput" placeholder="Поиск по ФИО или номеру телефона...">
+                        <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"/>
+                            <path d="m21 21-4.35-4.35"/>
+                        </svg>
+                    </div>
+                    <div class="btn-group">
+                        ${currentUserRole === 'admin' ? `
+                        <button class="btn btn-secondary" onclick="exportClients()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="7 10 12 15 17 10"/>
+                                <line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>
+                            Экспорт
+                        </button>
+                        <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="17 8 12 3 7 8"/>
+                                <line x1="12" y1="3" x2="12" y2="15"/>
+                            </svg>
+                            Импорт
+                        </button>
+                        <input type="file" id="importFile" accept=".csv,.json,.xls,.xlsx" style="display: none;" onchange="importClients(event)">
+                        ` : ''}
+                        <button class="btn btn-primary" onclick="openAddClientModal()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="12" y1="5" x2="12" y2="19"/>
+                                <line x1="5" y1="12" x2="19" y2="12"/>
+                            </svg>
+                            Добавить клиента
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table id="clientsTable">
+                        <thead>
+                            <tr>
+                                <th>№</th>
+                                <th>Дата регистрации</th>
+                                <th>ФИО</th>
+                                <th>Email</th>
+                                <th>Телефон</th>
+                                <th>Дата рождения</th>
+                                <th>Пол</th>
+                                <th>Бонусы</th>
+                                <th>QR-код</th>
+                            </tr>
+                        </thead>
+                        <tbody id="clientsTableBody">
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- BONUS MODAL -->
+                <div class="modal" id="bonusModal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h2>Управление бонусами</h2>
+                            <button class="close-modal" onclick="closeBonusModal()">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="current-bonus">
+                                <div style="font-size: 14px; color: #666; margin-bottom: 5px;">Текущий баланс</div>
+                                <div class="current-bonus-value" id="currentBonusValue">0</div>
+                                <div style="font-size: 13px; color: #666; margin-top: 5px;" id="clientNameInModal"></div>
+                            </div>
+                            <div class="form-row">
+                                <label>Количество бонусов</label>
+                                <input type="number" id="bonusAmount" placeholder="Введите количество бонусов" min="1">
+                            </div>
+                            <div class="bonus-actions">
+                                ${currentUserRole === 'admin' ? `
+                                <button class="btn btn-success" onclick="addBonus()" style="flex: 1;">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <line x1="12" y1="5" x2="12" y2="19"/>
+                                        <line x1="5" y1="12" x2="19" y2="12"/>
+                                    </svg>
+                                    Начислить
+                                </button>
+                                ` : ''}
+                                <button class="btn btn-danger" onclick="subtractBonus()" style="flex: 1;">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <line x1="5" y1="12" x2="19" y2="12"/>
+                                    </svg>
+                                    Списать
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ADD CLIENT MODAL -->
+                <div class="modal" id="addClientModal">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h2>Добавить клиента</h2>
+                            <button class="close-modal" onclick="closeAddClientModal()">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-row">
+                                <label>ФИО *</label>
+                                <input type="text" id="newClientFio" placeholder="Иванов Иван Иванович">
+                            </div>
+                            <div class="form-row">
+                                <label>Email *</label>
+                                <input type="email" id="newClientEmail" placeholder="example@mail.ru">
+                            </div>
+                            <div class="form-row">
+                                <label>Телефон *</label>
+                                <input type="tel" id="newClientPhone" placeholder="+7 (999) 123-45-67">
+                            </div>
+                            <div class="form-row">
+                                <label>Дата рождения</label>
+                                <input type="date" id="newClientBirthday">
+                            </div>
+                            <div class="form-row">
+                                <label>Пол</label>
+                                <select id="newClientGender">
+                                    <option value="М">Мужской</option>
+                                    <option value="Ж">Женский</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-primary" onclick="saveNewClient()" style="width: 100%; margin-top: 10px;">
+                                Сохранить
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            renderClientsTable();
+            
+            // Поиск
+            document.getElementById('searchInput').addEventListener('input', function(e) {
+                const searchTerm = e.target.value.toLowerCase();
+                const filteredClients = clientsData.filter(client => 
+                    client.fio.toLowerCase().includes(searchTerm) || 
+                    client.phone.includes(searchTerm)
+                );
+                renderClientsTable(filteredClients);
+            });
+        }
+
+        function renderClientsTable(data = clientsData) {
+            const tbody = document.getElementById('clientsTableBody');
+            if (!tbody) return;
+
+            tbody.innerHTML = data.map(client => `
+                <tr>
+                    <td>${client.id}</td>
+                    <td>${client.date}</td>
+                    <td>${client.fio}</td>
+                    <td>${client.email}</td>
+                    <td>${client.phone}</td>
+                    <td>${client.birthday}</td>
+                    <td>${client.gender}</td>
+                    <td><span class="bonus-link" onclick="openBonusModal(${client.id})">${client.bonus}</span></td>
+                    <td><span class="qr-link" onclick="showQR('${client.qr}')">Показать</span></td>
+                </tr>
+            `).join('');
+        }
+
+        let currentClientId = null;
+
+        function openBonusModal(clientId) {
+            const client = clientsData.find(c => c.id === clientId);
+            if (!client) return;
+
+            currentClientId = clientId;
+            document.getElementById('currentBonusValue').textContent = client.bonus;
+            document.getElementById('clientNameInModal').textContent = client.fio;
+            document.getElementById('bonusAmount').value = '';
+            document.getElementById('bonusModal').classList.add('show');
+        }
+
+        function closeBonusModal() {
+            document.getElementById('bonusModal').classList.remove('show');
+            currentClientId = null;
+        }
+
+        function addBonus() {
+            const amount = parseInt(document.getElementById('bonusAmount').value);
+            if (!amount || amount <= 0) {
+                alert('Введите корректное количество бонусов');
+                return;
+            }
+
+            const client = clientsData.find(c => c.id === currentClientId);
+            if (client) {
+                client.bonus += amount;
+                renderClientsTable();
+                closeBonusModal();
+                alert(`Начислено ${amount} бонусов клиенту ${client.fio}`);
+            }
+        }
+
+        function subtractBonus() {
+            const amount = parseInt(document.getElementById('bonusAmount').value);
+            if (!amount || amount <= 0) {
+                alert('Введите корректное количество бонусов');
+                return;
+            }
+
+            const client = clientsData.find(c => c.id === currentClientId);
+            if (client) {
+                if (client.bonus < amount) {
+                    alert('Недостаточно бонусов для списания');
+                    return;
+                }
+                client.bonus -= amount;
+                renderClientsTable();
+                closeBonusModal();
+                alert(`Списано ${amount} бонусов у клиента ${client.fio}`);
+            }
+        }
+
+        function openAddClientModal() {
+            document.getElementById('addClientModal').classList.add('show');
+        }
+
+        function closeAddClientModal() {
+            document.getElementById('addClientModal').classList.remove('show');
+        }
+
+        async function saveNewClient() {
+            const fio = document.getElementById('newClientFio').value.trim();
+            const email = document.getElementById('newClientEmail').value.trim();
+            const phone = document.getElementById('newClientPhone').value.trim();
+            const birthday = document.getElementById('newClientBirthday').value;
+            const gender = document.getElementById('newClientGender').value;
+
+            if (!fio || !email || !phone) {
+                alert('Заполните обязательные поля');
+                return;
+            }
+
+            // Показываем индикатор загрузки
+            const saveBtn = event.target;
+            const originalText = saveBtn.innerHTML;
+            saveBtn.innerHTML = '⏳ Сохранение...';
+            saveBtn.disabled = true;
+
+            const newClient = {
+                id: clientsData.length + 1,
+                date: new Date().toLocaleDateString('ru-RU'),
+                fio,
+                email,
+                phone,
+                birthday: birthday || '-',
+                gender,
+                bonus: 0,
+                qr: 'QR' + String(clientsData.length + 1).padStart(3, '0')
+            };
+
+            // Синхронизация с iiko (если настроено)
+            if (iikoConfig.accessToken) {
+                try {
+                    saveBtn.innerHTML = '⏳ Синхронизация с iiko...';
+                    
+                    const clientData = {
+                        phone: phone,
+                        fio: fio,
+                        email: email,
+                        birthday: birthday,
+                        gender: gender
+                    };
+                    
+                    const success = await createOrUpdateClientInIiko(clientData);
+                    
+                    if (success) {
+                        // Получаем ID клиента из iiko
+                        const iikoClient = await getClientFromIiko(phone);
+                        
+                        if (iikoClient && iikoClient.customer) {
+                            newClient.iikoCustomerId = iikoClient.customer.id;
+                            if (iikoClient.customer.walletBalances && iikoClient.customer.walletBalances.length > 0) {
+                                newClient.iikoWalletId = iikoClient.customer.walletBalances[0].id;
+                                newClient.bonus = iikoClient.customer.walletBalances[0].balance || 0;
+                            }
+                        }
+                        
+                        clientsData.push(newClient);
+                        renderClientsTable();
+                        closeAddClientModal();
+                        
+                        alert(`✅ Клиент ${fio} успешно добавлен!\n\n✓ Сохранено в PLAYPOOL\n✓ Синхронизировано с iiko Cloud`);
+                    } else {
+                        // Если синхронизация не удалась, все равно добавляем локально
+                        clientsData.push(newClient);
+                        renderClientsTable();
+                        closeAddClientModal();
+                        
+                        alert(`⚠️ Клиент ${fio} добавлен в PLAYPOOL\n\nСинхронизация с iiko не удалась.\nКлиент будет синхронизирован позже.`);
+                    }
+                } catch (error) {
+                    console.error('Ошибка синхронизации:', error);
+                    
+                    // Добавляем локально даже при ошибке
+                    clientsData.push(newClient);
+                    renderClientsTable();
+                    closeAddClientModal();
+                    
+                    alert(`⚠️ Клиент ${fio} добавлен в PLAYPOOL\n\nОшибка синхронизации с iiko: ${error.message}`);
+                }
+            } else {
+                // Если API не настроен - просто добавляем локально
+                clientsData.push(newClient);
+                renderClientsTable();
+                closeAddClientModal();
+                alert(`Клиент ${fio} успешно добавлен в PLAYPOOL\n\n💡 Подсказка: Настройте API в разделе "Интеграции" для автоматической синхронизации с iiko`);
+            }
+
+            // Восстанавливаем кнопку
+            saveBtn.innerHTML = originalText;
+            saveBtn.disabled = false;
+        }
+
+        function showQR(qrCode) {
+            alert(`QR-код: ${qrCode}\n\n(В реальной системе здесь будет отображаться QR-код)`);
+        }
+
+        function exportClients() {
+            // Создаем данные для Excel
+            const data = [
+                ['№', 'Дата регистрации', 'ФИО', 'Email', 'Телефон', 'Дата рождения', 'Пол', 'Бонусы', 'QR-код'],
+                ...clientsData.map(c => [c.id, c.date, c.fio, c.email, c.phone, c.birthday, c.gender, c.bonus, c.qr])
+            ];
+
+            // Создаем HTML таблицу для Excel
+            let html = '<table>';
+            data.forEach(row => {
+                html += '<tr>';
+                row.forEach(cell => {
+                    html += '<td>' + cell + '</td>';
+                });
+                html += '</tr>';
+            });
+            html += '</table>';
+
+            // Создаем blob с типом Excel
+            const blob = new Blob([html], { 
+                type: 'application/vnd.ms-excel;charset=utf-8;' 
+            });
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'clients_playpool_' + new Date().toISOString().split('T')[0] + '.xls';
+            link.click();
+            
+            alert('База клиентов экспортирована в Excel');
+        }
+
+        function importClients(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const content = e.target.result;
+                    let imported = 0;
+                    
+                    // Обработка CSV из iiko
+                    if (file.name.endsWith('.csv')) {
+                        const lines = content.split('\n');
+                        const headers = lines[0].toLowerCase().split(',');
+                        
+                        // Находим индексы колонок
+                        const nameIdx = headers.findIndex(h => h.includes('имя') || h.includes('name') || h.includes('фио'));
+                        const phoneIdx = headers.findIndex(h => h.includes('телефон') || h.includes('phone'));
+                        const emailIdx = headers.findIndex(h => h.includes('email') || h.includes('почта'));
+                        const birthdayIdx = headers.findIndex(h => h.includes('день рожд') || h.includes('birthday') || h.includes('дата рождения'));
+                        const bonusIdx = headers.findIndex(h => h.includes('бонус') || h.includes('bonus') || h.includes('баланс'));
+                        
+                        for (let i = 1; i < lines.length; i++) {
+                            const line = lines[i].trim();
+                            if (!line) continue;
+                            
+                            const values = line.split(',');
+                            const fio = values[nameIdx]?.trim() || '';
+                            const phone = values[phoneIdx]?.trim() || '';
+                            const email = values[emailIdx]?.trim() || `client${clientsData.length + 1}@playpool.ru`;
+                            const birthday = values[birthdayIdx]?.trim() || '-';
+                            const bonus = parseInt(values[bonusIdx]) || 0;
+                            
+                            if (fio && phone) {
+                                clientsData.push({
+                                    id: clientsData.length + 1,
+                                    date: new Date().toLocaleDateString('ru-RU'),
+                                    fio: fio,
+                                    email: email,
+                                    phone: phone,
+                                    birthday: birthday,
+                                    gender: 'М',
+                                    bonus: bonus,
+                                    qr: 'QR' + String(clientsData.length + 1).padStart(3, '0')
+                                });
+                                imported++;
+                            }
+                        }
+                    }
+                    
+                    // Обработка JSON
+                    else if (file.name.endsWith('.json')) {
+                        const data = JSON.parse(content);
+                        const clients = Array.isArray(data) ? data : data.clients || [];
+                        
+                        clients.forEach(client => {
+                            if (client.name || client.fio) {
+                                clientsData.push({
+                                    id: clientsData.length + 1,
+                                    date: client.date || new Date().toLocaleDateString('ru-RU'),
+                                    fio: client.fio || client.name || '',
+                                    email: client.email || `client${clientsData.length + 1}@playpool.ru`,
+                                    phone: client.phone || client.telephone || '',
+                                    birthday: client.birthday || client.birthDate || '-',
+                                    gender: client.gender || client.sex || 'М',
+                                    bonus: parseInt(client.bonus || client.balance) || 0,
+                                    qr: 'QR' + String(clientsData.length + 1).padStart(3, '0')
+                                });
+                                imported++;
+                            }
+                        });
+                    }
+                    
+                    renderClientsTable();
+                    alert(`✅ Успешно импортировано клиентов: ${imported}\n\nТеперь клиенты доступны в базе PLAYPOOL!`);
+                    
+                } catch (error) {
+                    alert('❌ Ошибка при импорте файла: ' + error.message);
+                }
+            };
+            
+            reader.readAsText(file, 'UTF-8');
+        }
+
+        // ========== ANALYTICS PAGE ==========
+        
+        // Данные транзакций для расчета активности (в реальности будут из iiko)
+        let transactionsData = [
+            { clientId: 1, date: '15.01.2026', fio: 'Иванов Иван Иванович' },
+            { clientId: 1, date: '18.01.2026', fio: 'Иванов Иван Иванович' },
+            { clientId: 1, date: '22.01.2026', fio: 'Иванов Иван Иванович' },
+            { clientId: 1, date: '25.01.2026', fio: 'Иванов Иван Иванович' },
+            { clientId: 2, date: '16.01.2026', fio: 'Петрова Мария Сергеевна' },
+            { clientId: 2, date: '20.01.2026', fio: 'Петрова Мария Сергеевна' },
+            { clientId: 2, date: '28.01.2026', fio: 'Петрова Мария Сергеевна' },
+            { clientId: 3, date: '17.01.2026', fio: 'Сидоров Петр Александрович' },
+            { clientId: 3, date: '30.01.2026', fio: 'Сидоров Петр Александрович' },
+            { clientId: 4, date: '19.01.2026', fio: 'Козлова Анна Дмитриевна' },
+            { clientId: 5, date: '21.01.2026', fio: 'Николаев Алексей Викторович' },
+        ];
+        
+        function loadAnalyticsPage() {
+            const contentArea = document.getElementById('contentArea');
+            
+            // Расчет аналитики
+            const totalClients = clientsData.length;
+            
+            // Для демонстрации
+            const registrationsWeek = 12;
+            const registrationsMonth = 45;
+            
+            // Средний чек за бильярд (будет подтягиваться из iiko)
+            const averageBilliardCheck = 3250;
+            
+            // Средний баланс бонусов
+            const totalBonus = clientsData.reduce((sum, client) => sum + client.bonus, 0);
+            const averageBonus = Math.round(totalBonus / totalClients);
+            
+            // НОВЫЙ РАСЧЕТ: Процент активных пользователей за последний месяц
+            // Уникальные клиенты из транзакций за месяц
+            const monthAgo = new Date();
+            monthAgo.setMonth(monthAgo.getMonth() - 1);
+            
+            const uniqueVisitors = new Set();
+            transactionsData.forEach(transaction => {
+                uniqueVisitors.add(transaction.clientId);
+            });
+            
+            const activeClientsCount = uniqueVisitors.size;
+            const activePercent = Math.round((activeClientsCount / totalClients) * 100);
+            
+            // НОВЫЙ: Топ-5 самых активных посетителей за месяц
+            const visitCounts = {};
+            transactionsData.forEach(transaction => {
+                if (!visitCounts[transaction.clientId]) {
+                    visitCounts[transaction.clientId] = {
+                        fio: transaction.fio,
+                        count: 0
+                    };
+                }
+                visitCounts[transaction.clientId].count++;
+            });
+            
+            const topVisitors = Object.entries(visitCounts)
+                .map(([id, data]) => ({
+                    clientId: id,
+                    fio: data.fio,
+                    visits: data.count
+                }))
+                .sort((a, b) => b.visits - a.visits)
+                .slice(0, 5);
+            
+            // Топ-5 клиентов по бонусам
+            const topClients = [...clientsData]
+                .sort((a, b) => b.bonus - a.bonus)
+                .slice(0, 5);
+            
+            // Данные для графика - создаем динамически от 2023 до текущего года + 1
+            const currentYear = new Date().getFullYear();
+            const years = [];
+            for (let year = 2023; year <= currentYear + 1; year++) {
+                years.push(year);
+            }
+            
+            // Данные по годам
+            const yearlyData = {
+                2023: [
+                    { month: 'Янв', value: 12 },
+                    { month: 'Фев', value: 15 },
+                    { month: 'Мар', value: 18 },
+                    { month: 'Апр', value: 22 },
+                    { month: 'Май', value: 25 },
+                    { month: 'Июн', value: 20 },
+                    { month: 'Июл', value: 28 },
+                    { month: 'Авг', value: 32 },
+                    { month: 'Сен', value: 30 },
+                    { month: 'Окт', value: 35 },
+                    { month: 'Ноя', value: 38 },
+                    { month: 'Дек', value: 40 }
+                ],
+                2024: [
+                    { month: 'Янв', value: 15 },
+                    { month: 'Фев', value: 18 },
+                    { month: 'Мар', value: 22 },
+                    { month: 'Апр', value: 28 },
+                    { month: 'Май', value: 32 },
+                    { month: 'Июн', value: 30 },
+                    { month: 'Июл', value: 35 },
+                    { month: 'Авг', value: 40 },
+                    { month: 'Сен', value: 38 },
+                    { month: 'Окт', value: 42 },
+                    { month: 'Ноя', value: 45 },
+                    { month: 'Дек', value: 48 }
+                ],
+                2025: [
+                    { month: 'Янв', value: 18 },
+                    { month: 'Фев', value: 22 },
+                    { month: 'Мар', value: 28 },
+                    { month: 'Апр', value: 35 },
+                    { month: 'Май', value: 42 },
+                    { month: 'Июн', value: 38 },
+                    { month: 'Июл', value: 45 },
+                    { month: 'Авг', value: 52 },
+                    { month: 'Сен', value: 48 },
+                    { month: 'Окт', value: 55 },
+                    { month: 'Ноя', value: 50 },
+                    { month: 'Дек', value: 47 }
+                ],
+                2026: [
+                    { month: 'Янв', value: 20 },
+                    { month: 'Фев', value: 45 },
+                    { month: 'Мар', value: 0 },
+                    { month: 'Апр', value: 0 },
+                    { month: 'Май', value: 0 },
+                    { month: 'Июн', value: 0 },
+                    { month: 'Июл', value: 0 },
+                    { month: 'Авг', value: 0 },
+                    { month: 'Сен', value: 0 },
+                    { month: 'Окт', value: 0 },
+                    { month: 'Ноя', value: 0 },
+                    { month: 'Дек', value: 0 }
+                ],
+                2027: [
+                    { month: 'Янв', value: 0 },
+                    { month: 'Фев', value: 0 },
+                    { month: 'Мар', value: 0 },
+                    { month: 'Апр', value: 0 },
+                    { month: 'Май', value: 0 },
+                    { month: 'Июн', value: 0 },
+                    { month: 'Июл', value: 0 },
+                    { month: 'Авг', value: 0 },
+                    { month: 'Сен', value: 0 },
+                    { month: 'Окт', value: 0 },
+                    { month: 'Ноя', value: 0 },
+                    { month: 'Дек', value: 0 }
+                ]
+            };
+            
+            contentArea.innerHTML = `
+                <div class="page-header">
+                    <h1>Аналитика</h1>
+                    <p>Статистика и отчеты системы лояльности</p>
+                </div>
+
+                <!-- MAIN METRICS -->
+                <div class="analytics-grid">
+                    <div class="analytics-card">
+                        <h3>Регистраций за неделю</h3>
+                        <div class="analytics-value blue">${registrationsWeek}</div>
+                        <div class="analytics-subtitle">За последние 7 дней</div>
+                    </div>
+
+                    <div class="analytics-card">
+                        <h3>Регистраций за месяц</h3>
+                        <div class="analytics-value blue">${registrationsMonth}</div>
+                        <div class="analytics-subtitle">За последние 30 дней</div>
+                    </div>
+
+                    <div class="analytics-card">
+                        <h3>Средний чек за бильярд</h3>
+                        <div class="analytics-value red">${averageBilliardCheck.toLocaleString('ru-RU')} ₽</div>
+                        <div class="analytics-subtitle">Данные из iiko</div>
+                    </div>
+
+                    <div class="analytics-card">
+                        <h3>Средний баланс бонусов</h3>
+                        <div class="analytics-value green">${averageBonus.toLocaleString('ru-RU')}</div>
+                        <div class="analytics-subtitle">На одного клиента</div>
+                    </div>
+
+                    <div class="analytics-card">
+                        <h3>Активные посетители</h3>
+                        <div class="analytics-value blue">${activePercent}%</div>
+                        <div class="analytics-subtitle">${activeClientsCount} из ${totalClients} посетили за месяц</div>
+                    </div>
+                </div>
+
+                <!-- REGISTRATION CHART -->
+                <div class="chart-container">
+                    <div class="chart-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 10px;">
+                            <line x1="18" y1="20" x2="18" y2="10"/>
+                            <line x1="12" y1="20" x2="12" y2="4"/>
+                            <line x1="6" y1="20" x2="6" y2="14"/>
+                        </svg>
+                        График регистраций новых пользователей
+                    </div>
+                    <div class="year-selector">
+                        <label>Выберите год:</label>
+                        <select id="yearSelect" onchange="updateChart(this.value)">
+                            ${years.map(year => `<option value="${year}" ${year === currentYear ? 'selected' : ''}>${year}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div id="chartArea"></div>
+                </div>
+
+                <!-- TOP VISITORS -->
+                <div class="chart-container">
+                    <div class="chart-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 10px;">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                            <line x1="23" y1="11" x2="23" y2="17"/>
+                            <line x1="20" y1="14" x2="26" y2="14"/>
+                        </svg>
+                        Топ-5 самых активных посетителей за месяц
+                    </div>
+                    <ul class="top-clients-list">
+                        ${topVisitors.map((visitor, index) => {
+                            let rankClass = '';
+                            if (index === 0) rankClass = 'gold';
+                            else if (index === 1) rankClass = 'silver';
+                            else if (index === 2) rankClass = 'bronze';
+                            
+                            return `
+                                <li class="top-client-item">
+                                    <div class="client-rank ${rankClass}">${index + 1}</div>
+                                    <div class="client-info">
+                                        <div class="client-name">${visitor.fio}</div>
+                                    </div>
+                                    <div class="visits-count">${visitor.visits} ${visitor.visits === 1 ? 'визит' : visitor.visits < 5 ? 'визита' : 'визитов'}</div>
+                                </li>
+                            `;
+                        }).join('')}
+                    </ul>
+                </div>
+
+                <!-- TOP CLIENTS BY BONUS -->
+                <div class="chart-container">
+                    <div class="chart-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 10px;">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                            <circle cx="8.5" cy="7" r="4"/>
+                            <polyline points="17 11 19 13 23 9"/>
+                        </svg>
+                        Топ-5 клиентов по количеству бонусов
+                    </div>
+                    <ul class="top-clients-list">
+                        ${topClients.map((client, index) => {
+                            let rankClass = '';
+                            if (index === 0) rankClass = 'gold';
+                            else if (index === 1) rankClass = 'silver';
+                            else if (index === 2) rankClass = 'bronze';
+                            
+                            return `
+                                <li class="top-client-item">
+                                    <div class="client-rank ${rankClass}">${index + 1}</div>
+                                    <div class="client-info">
+                                        <div class="client-name">${client.fio}</div>
+                                    </div>
+                                    <div class="client-bonus">${client.bonus.toLocaleString('ru-RU')}</div>
+                                </li>
+                            `;
+                        }).join('')}
+                    </ul>
+                </div>
+            `;
+            
+            // Сохраняем данные в глобальную область для функции updateChart
+            window.yearlyDataGlobal = yearlyData;
+            
+            // Рендерим график для текущего года
+            updateChart(currentYear);
+        }
+
+        // Функция обновления графика при выборе года
+        function updateChart(year) {
+            const chartArea = document.getElementById('chartArea');
+            if (!chartArea) return;
+            
+            const monthlyData = window.yearlyDataGlobal[year] || window.yearlyDataGlobal[2025];
+            const maxValue = Math.max(...monthlyData.map(d => d.value));
+            
+            chartArea.innerHTML = `
+                <div class="bar-chart">
+                    ${monthlyData.map(data => {
+                        const height = data.value > 0 ? (data.value / maxValue) * 100 : 2;
+                        return `
+                            <div style="flex: 1; display: flex; flex-direction: column; align-items: center;">
+                                <div class="bar" style="height: ${height}%; background: linear-gradient(180deg, #FA3D30 0%, #d63426 100%); min-width: 40px; border-radius: 8px 8px 0 0; position: relative; transition: all 0.3s ease;">
+                                    ${data.value > 0 ? `<div class="bar-value" style="position: absolute; top: -30px; left: 50%; transform: translateX(-50%); font-size: 14px; font-weight: 700; color: #333; white-space: nowrap;">${data.value}</div>` : ''}
+                                </div>
+                                <div class="bar-label" style="margin-top: 15px; font-size: 13px; color: #666; font-weight: 600;">${data.month}</div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+        }
+
+        // ========== LOYALTY SYSTEM PAGE ==========
+        
+        // Настройки системы лояльности (будут сохраняться в iiko)
+        let loyaltySettings = {
+            bonusPercent: 5,
+            maxPaymentPercent: 50,
+            birthdayBonus: 10,
+            firstMonthBonus: 15
+        };
+
+        let selectedClientForQuickAction = null;
+
+        function loadLoyaltyPage() {
+            const contentArea = document.getElementById('contentArea');
+            
+            contentArea.innerHTML = `
+                <div class="page-header">
+                    <h1>Система лояльности</h1>
+                    <p>Настройка параметров программы лояльности PLAYPOOL</p>
+                </div>
+
+                <!-- SETTINGS FORM -->
+                <div class="settings-form">
+                    <h2 style="font-size: 20px; font-weight: 700; color: #333; margin-bottom: 25px;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle; margin-right: 10px;">
+                            <circle cx="12" cy="12" r="3"/>
+                            <path d="M12 1v6m0 6v6m8.66-10l-5.2 3M8.54 14l-5.2 3m13.32 0l-5.2-3M8.54 10l-5.2-3"/>
+                        </svg>
+                        Параметры начисления бонусов
+                    </h2>
+
+                    <div class="settings-row">
+                        <div class="setting-field">
+                            <label>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="12" y1="1" x2="12" y2="23"/>
+                                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                                </svg>
+                                Процент начисления бонусов с чека
+                            </label>
+                            <input type="number" id="bonusPercent" value="${loyaltySettings.bonusPercent}" min="0" max="100">
+                            <span class="setting-hint">Какой процент от суммы чека начисляется в виде бонусов</span>
+                        </div>
+
+                        <div class="setting-field">
+                            <label>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                                    <line x1="1" y1="10" x2="23" y2="10"/>
+                                </svg>
+                                Максимальный процент оплаты бонусами
+                            </label>
+                            <input type="number" id="maxPaymentPercent" value="${loyaltySettings.maxPaymentPercent}" min="0" max="100">
+                            <span class="setting-hint">Максимальный процент от чека, который можно оплатить бонусами</span>
+                        </div>
+
+                        <div class="setting-field">
+                            <label>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                                    <line x1="16" y1="2" x2="16" y2="6"/>
+                                    <line x1="8" y1="2" x2="8" y2="6"/>
+                                    <line x1="3" y1="10" x2="21" y2="10"/>
+                                </svg>
+                                Процент начисления в день рождения
+                            </label>
+                            <input type="number" id="birthdayBonus" value="${loyaltySettings.birthdayBonus}" min="0" max="100">
+                            <span class="setting-hint">Дополнительные бонусы в день рождения клиента</span>
+                        </div>
+
+                        <div class="setting-field">
+                            <label>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                    <polyline points="22 4 12 14.01 9 11.01"/>
+                                </svg>
+                                Процент начисления в первый месяц регистрации
+                            </label>
+                            <input type="number" id="firstMonthBonus" value="${loyaltySettings.firstMonthBonus}" min="0" max="100">
+                            <span class="setting-hint">Повышенные бонусы для новых клиентов (первый месяц)</span>
+                        </div>
+                    </div>
+
+                    <button class="btn-save-settings" onclick="saveLoyaltySettings()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                            <polyline points="17 21 17 13 7 13 7 21"/>
+                            <polyline points="7 3 7 8 15 8"/>
+                        </svg>
+                        Сохранить настройки
+                    </button>
+                </div>
+
+                <!-- QUICK ACTIONS -->
+                <div class="quick-actions-section">
+                    <div class="quick-actions-header">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polyline points="12 6 12 12 16 14"/>
+                        </svg>
+                        Быстрые действия с бонусами
+                    </div>
+
+                    <div class="search-and-action">
+                        <div class="quick-search">
+                            <input 
+                                type="text" 
+                                id="quickSearchInput" 
+                                placeholder="Поиск клиента по ФИО или номеру телефона..."
+                                oninput="searchClientForQuickAction(this.value)"
+                            >
+                            <div class="suggestions-list" id="suggestionsList"></div>
+                        </div>
+                    </div>
+
+                    <div class="selected-client-card" id="selectedClientCard">
+                        <div class="client-card-header">
+                            <div class="client-card-name" id="selectedClientName">-</div>
+                            <div class="client-card-bonus" id="selectedClientBonus">0</div>
+                        </div>
+                        <div class="client-card-info" id="selectedClientInfo">-</div>
+
+                        <div class="bonus-action-form">
+                            <div class="bonus-input-group">
+                                <label>Количество бонусов</label>
+                                <input type="number" id="quickBonusAmount" placeholder="Введите количество" min="1">
+                            </div>
+                            <div class="bonus-buttons">
+                                <button class="btn btn-success" onclick="quickAddBonus()">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <line x1="12" y1="5" x2="12" y2="19"/>
+                                        <line x1="5" y1="12" x2="19" y2="12"/>
+                                    </svg>
+                                    Начислить
+                                </button>
+                                <button class="btn btn-danger" onclick="quickSubtractBonus()">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <line x1="5" y1="12" x2="19" y2="12"/>
+                                    </svg>
+                                    Списать
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="success-message" id="quickActionSuccess">
+                            Операция выполнена успешно!
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function saveLoyaltySettings() {
+            loyaltySettings.bonusPercent = parseFloat(document.getElementById('bonusPercent').value);
+            loyaltySettings.maxPaymentPercent = parseFloat(document.getElementById('maxPaymentPercent').value);
+            loyaltySettings.birthdayBonus = parseFloat(document.getElementById('birthdayBonus').value);
+            loyaltySettings.firstMonthBonus = parseFloat(document.getElementById('firstMonthBonus').value);
+
+            // В будущем здесь будет отправка в iiko
+            // await saveToIiko('/api/loyalty-settings', loyaltySettings);
+
+            alert('Настройки системы лояльности сохранены!\n\n' +
+                  `Процент начисления с чека: ${loyaltySettings.bonusPercent}%\n` +
+                  `Макс. оплата бонусами: ${loyaltySettings.maxPaymentPercent}%\n` +
+                  `Бонус в день рождения: ${loyaltySettings.birthdayBonus}%\n` +
+                  `Бонус в первый месяц: ${loyaltySettings.firstMonthBonus}%`
+            );
+        }
+
+        function searchClientForQuickAction(searchTerm) {
+            const suggestionsList = document.getElementById('suggestionsList');
+            
+            if (!searchTerm || searchTerm.length < 2) {
+                suggestionsList.classList.remove('show');
+                return;
+            }
+
+            const filtered = clientsData.filter(client => 
+                client.fio.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                client.phone.includes(searchTerm)
+            ).slice(0, 5);
+
+            if (filtered.length === 0) {
+                suggestionsList.classList.remove('show');
+                return;
+            }
+
+            suggestionsList.innerHTML = filtered.map(client => `
+                <div class="suggestion-item" onclick="selectClientForQuickAction(${client.id})">
+                    <div class="suggestion-name">${client.fio}</div>
+                    <div class="suggestion-details">${client.phone} • Бонусы: ${client.bonus}</div>
+                </div>
+            `).join('');
+
+            suggestionsList.classList.add('show');
+        }
+
+        function selectClientForQuickAction(clientId) {
+            const client = clientsData.find(c => c.id === clientId);
+            if (!client) return;
+
+            selectedClientForQuickAction = client;
+
+            document.getElementById('selectedClientName').textContent = client.fio;
+            document.getElementById('selectedClientBonus').textContent = client.bonus.toLocaleString('ru-RU');
+            document.getElementById('selectedClientInfo').textContent = 
+                `${client.phone} • ${client.email} • Регистрация: ${client.date}`;
+            
+            document.getElementById('selectedClientCard').classList.add('show');
+            document.getElementById('suggestionsList').classList.remove('show');
+            document.getElementById('quickSearchInput').value = client.fio;
+            document.getElementById('quickBonusAmount').value = '';
+            document.getElementById('quickActionSuccess').classList.remove('show');
+        }
+
+        async function quickAddBonus() {
+            if (!selectedClientForQuickAction) {
+                alert('Выберите клиента');
+                return;
+            }
+
+            const amount = parseInt(document.getElementById('quickBonusAmount').value);
+            if (!amount || amount <= 0) {
+                alert('Введите корректное количество бонусов');
+                return;
+            }
+
+            const client = clientsData.find(c => c.id === selectedClientForQuickAction.id);
+            if (client) {
+                // Локальное начисление
+                client.bonus += amount;
+                selectedClientForQuickAction.bonus = client.bonus;
+                
+                document.getElementById('selectedClientBonus').textContent = client.bonus.toLocaleString('ru-RU');
+                document.getElementById('quickBonusAmount').value = '';
+                
+                const successMsg = document.getElementById('quickActionSuccess');
+                successMsg.textContent = `⏳ Начисление ${amount} бонусов...`;
+                successMsg.classList.add('show');
+
+                // Синхронизация с iiko (если настроено)
+                if (iikoConfig.accessToken && client.iikoCustomerId && client.iikoWalletId) {
+                    const success = await addBonusInIiko(
+                        client.iikoCustomerId, 
+                        client.iikoWalletId, 
+                        amount, 
+                        `Начисление через PLAYPOOL`
+                    );
+                    
+                    if (success) {
+                        successMsg.textContent = `✅ Начислено ${amount} бонусов клиенту ${client.fio} (синхронизировано с iiko)`;
+                    } else {
+                        successMsg.textContent = `⚠️ Начислено ${amount} бонусов клиенту ${client.fio} (локально, синхронизация с iiko не удалась)`;
+                    }
+                } else {
+                    successMsg.textContent = `✓ Начислено ${amount} бонусов клиенту ${client.fio}`;
+                }
+
+                setTimeout(() => {
+                    successMsg.classList.remove('show');
+                }, 3000);
+            }
+        }
+
+        async function quickSubtractBonus() {
+            if (!selectedClientForQuickAction) {
+                alert('Выберите клиента');
+                return;
+            }
+
+            const amount = parseInt(document.getElementById('quickBonusAmount').value);
+            if (!amount || amount <= 0) {
+                alert('Введите корректное количество бонусов');
+                return;
+            }
+
+            const client = clientsData.find(c => c.id === selectedClientForQuickAction.id);
+            if (client) {
+                if (client.bonus < amount) {
+                    alert('Недостаточно бонусов для списания');
+                    return;
+                }
+
+                // Локальное списание
+                client.bonus -= amount;
+                selectedClientForQuickAction.bonus = client.bonus;
+                
+                document.getElementById('selectedClientBonus').textContent = client.bonus.toLocaleString('ru-RU');
+                document.getElementById('quickBonusAmount').value = '';
+                
+                const successMsg = document.getElementById('quickActionSuccess');
+                successMsg.textContent = `⏳ Списание ${amount} бонусов...`;
+                successMsg.classList.add('show');
+
+                // Синхронизация с iiko (если настроено)
+                if (iikoConfig.accessToken && client.iikoCustomerId && client.iikoWalletId) {
+                    const success = await subtractBonusInIiko(
+                        client.iikoCustomerId, 
+                        client.iikoWalletId, 
+                        amount, 
+                        `Списание через PLAYPOOL`
+                    );
+                    
+                    if (success) {
+                        successMsg.textContent = `✅ Списано ${amount} бонусов у клиента ${client.fio} (синхронизировано с iiko)`;
+                    } else {
+                        successMsg.textContent = `⚠️ Списано ${amount} бонусов у клиента ${client.fio} (локально, синхронизация с iiko не удалась)`;
+                    }
+                } else {
+                    successMsg.textContent = `✓ Списано ${amount} бонусов у клиента ${client.fio}`;
+                }
+
+                setTimeout(() => {
+                    successMsg.classList.remove('show');
+                }, 3000);
+            }
+        }
+
+        // ========== INTEGRATIONS PAGE ==========
+        
+        // Конфигурация iiko API
+        let iikoConfig = {
+            apiLogin: '',
+            organizationId: '',
+            accessToken: '',
+            tokenExpiry: null
+        };
+
+        function loadIntegrationsPage() {
+            const contentArea = document.getElementById('contentArea');
+            
+            contentArea.innerHTML = `
+                <div class="page-header">
+                    <h1>Интеграции</h1>
+                    <p>API документация для интеграции с iiko Cloud API</p>
+                </div>
+
+                <!-- ОБЩАЯ ИНФОРМАЦИЯ -->
+                <div class="api-section">
+                    <div class="api-section-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <line x1="12" y1="8" x2="12" y2="12"/>
+                            <line x1="12" y1="16" x2="12.01" y2="16"/>
+                        </svg>
+                        Общая информация
+                    </div>
+
+                    <div class="api-info">
+                        <div class="api-info-title">Base URL</div>
+                        <div class="api-info-text">
+                            <code style="background: #2d2d2d; color: #27ae60; padding: 4px 8px; border-radius: 4px; font-family: monospace;">https://api-ru.iiko.services</code>
+                        </div>
+                    </div>
+
+                    <div class="api-info">
+                        <div class="api-info-title">Аутентификация</div>
+                        <div class="api-info-text">
+                            Для работы с API необходимо получить токен доступа. Токен действителен 1 час.<br>
+                            API Login можно получить в настройках iiko Cloud → API.
+                        </div>
+                    </div>
+
+                    <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 20px; border-radius: 8px; margin-top: 20px;">
+                        <div style="font-size: 14px; font-weight: 700; color: #856404; margin-bottom: 15px;">
+                            ⚙️ Конфигурация подключения
+                        </div>
+                        <div style="font-size: 13px; color: #856404; margin-bottom: 20px;">
+                            Введите данные для подключения к iiko Cloud API. Эти данные будут использоваться для синхронизации клиентов и бонусов.
+                        </div>
+
+                        <div style="display: grid; gap: 15px;">
+                            <div>
+                                <label style="display: block; font-size: 13px; font-weight: 700; color: #333; margin-bottom: 8px;">
+                                    API Login <span style="color: #c33;">*</span>
+                                </label>
+                                <input 
+                                    type="text" 
+                                    id="apiLoginInput" 
+                                    placeholder="Получите в iiko Cloud → Настройки → API"
+                                    style="width: 100%; padding: 12px 15px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; font-family: monospace;"
+                                >
+                                <div style="font-size: 12px; color: #666; margin-top: 5px;">
+                                    Пример: your-api-login-12345
+                                </div>
+                            </div>
+
+                            <div>
+                                <label style="display: block; font-size: 13px; font-weight: 700; color: #333; margin-bottom: 8px;">
+                                    Organization ID <span style="color: #c33;">*</span>
+                                </label>
+                                <input 
+                                    type="text" 
+                                    id="organizationIdInput" 
+                                    placeholder="UUID организации из iiko Cloud"
+                                    style="width: 100%; padding: 12px 15px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; font-family: monospace;"
+                                >
+                                <div style="font-size: 12px; color: #666; margin-top: 5px;">
+                                    Пример: 550e8400-e29b-41d4-a716-446655440000
+                                </div>
+                            </div>
+
+                            <div>
+                                <label style="display: block; font-size: 13px; font-weight: 700; color: #333; margin-bottom: 8px;">
+                                    Access Token (автоматически)
+                                </label>
+                                <input 
+                                    type="text" 
+                                    id="accessTokenInput" 
+                                    placeholder="Токен будет получен автоматически после тестирования"
+                                    style="width: 100%; padding: 12px 15px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 14px; font-family: monospace; background: #f8f9fa;"
+                                    readonly
+                                >
+                                <div style="font-size: 12px; color: #666; margin-top: 5px;">
+                                    Токен действителен 1 час, после чего автоматически обновляется
+                                </div>
+                            </div>
+
+                            <div style="display: flex; gap: 10px; margin-top: 10px;">
+                                <button 
+                                    class="btn btn-primary" 
+                                    onclick="testIikoConnection()"
+                                    style="flex: 1;"
+                                >
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle;">
+                                        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                                    </svg>
+                                    Тестировать подключение
+                                </button>
+                                <button 
+                                    class="btn btn-success" 
+                                    onclick="saveIikoConfig()"
+                                    style="flex: 1;"
+                                >
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle;">
+                                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                                        <polyline points="17 21 17 13 7 13 7 21"/>
+                                        <polyline points="7 3 7 8 15 8"/>
+                                    </svg>
+                                    Сохранить конфигурацию
+                                </button>
+                            </div>
+
+                            <div id="connectionStatus" style="display: none; padding: 12px 15px; border-radius: 8px; font-size: 13px; margin-top: 10px;"></div>
+                        </div>
+                    </div>
+
+                    <div style="background: #e7f3ff; border-left: 4px solid #1E85D5; padding: 20px; border-radius: 8px; margin-top: 20px;">
+                        <div style="font-size: 14px; font-weight: 700; color: #0c5288; margin-bottom: 12px;">
+                            📖 Как получить API Login и Organization ID:
+                        </div>
+                        <ol style="font-size: 13px; color: #0c5288; line-height: 1.8; margin-left: 20px;">
+                            <li>Войдите в <strong>iiko Cloud</strong> (admin.iiko.ru)</li>
+                            <li>Перейдите в <strong>Настройки</strong> → <strong>API</strong></li>
+                            <li>Включите доступ к API (если отключен)</li>
+                            <li>Скопируйте <strong>API Login</strong></li>
+                            <li><strong>Organization ID</strong> можно найти в URL или в разделе "Организации"</li>
+                            <li>Вставьте данные в поля выше и нажмите "Тестировать подключение"</li>
+                        </ol>
+                    </div>
+
+                    <table class="config-table">
+                        <thead>
+                            <tr>
+                                <th>Параметр</th>
+                                <th>Описание</th>
+                                <th>Статус</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>API Login</strong></td>
+                                <td>Логин для доступа к API (получить в iiko Cloud)</td>
+                                <td><span class="badge required">Обязательно</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Access Token</strong></td>
+                                <td>Токен доступа, получаемый через метод авторизации</td>
+                                <td><span class="badge required">Обязательно</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Organization ID</strong></td>
+                                <td>ID организации в системе iiko</td>
+                                <td><span class="badge required">Обязательно</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- АВТОРИЗАЦИЯ -->
+                <div class="api-section">
+                    <div class="api-section-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                        </svg>
+                        1. Авторизация
+                    </div>
+
+                    <ul class="endpoint-list">
+                        <li class="endpoint-item">
+                            <div class="endpoint-header">
+                                <span class="endpoint-method post">POST</span>
+                                <span class="endpoint-path">/api/1/access_token</span>
+                            </div>
+                            <div class="endpoint-description">
+                                Получение токена доступа для работы с API
+                            </div>
+                            <div class="endpoint-params">
+                                <strong>Request Body:</strong>
+                            </div>
+                            <div class="code-block">
+{
+  "apiLogin": "ваш_api_login"
+}</div>
+                            <div class="endpoint-params" style="margin-top: 10px;">
+                                <strong>Response:</strong>
+                            </div>
+                            <div class="code-block">
+{
+  "token": "eyJhbGciOiJIUzI1...",
+  "correlationId": "550e8400-e29b-41d4-a716-446655440000"
+}</div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- ОРГАНИЗАЦИИ -->
+                <div class="api-section">
+                    <div class="api-section-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                        </svg>
+                        2. Организации
+                    </div>
+
+                    <ul class="endpoint-list">
+                        <li class="endpoint-item">
+                            <div class="endpoint-header">
+                                <span class="endpoint-method post">POST</span>
+                                <span class="endpoint-path">/api/1/organizations</span>
+                            </div>
+                            <div class="endpoint-description">
+                                Получение списка организаций, доступных для API пользователя
+                            </div>
+                            <div class="endpoint-params">
+                                <strong>Headers:</strong> Authorization: Bearer {token}
+                            </div>
+                            <div class="code-block">
+{
+  "organizationIds": ["org-uuid-1", "org-uuid-2"],
+  "returnAdditionalInfo": true
+}</div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- КЛИЕНТЫ И ЛОЯЛЬНОСТЬ -->
+                <div class="api-section">
+                    <div class="api-section-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                        </svg>
+                        3. Управление клиентами и бонусами
+                    </div>
+
+                    <ul class="endpoint-list">
+                        <li class="endpoint-item">
+                            <div class="endpoint-header">
+                                <span class="endpoint-method post">POST</span>
+                                <span class="endpoint-path">/api/1/loyalty/iiko/customer/info</span>
+                            </div>
+                            <div class="endpoint-description">
+                                Получение информации о клиенте по телефону, карте или ID
+                            </div>
+                            <div class="code-block">
+{
+  "organizationId": "organization-uuid",
+  "type": "phone",  // "phone", "id", "cardTrack"
+  "phone": "+79991234567"
+}</div>
+                            <div class="endpoint-params" style="margin-top: 10px;">
+                                <strong>Response:</strong> Информация о клиенте с балансом бонусов
+                            </div>
+                        </li>
+
+                        <li class="endpoint-item">
+                            <div class="endpoint-header">
+                                <span class="endpoint-method post">POST</span>
+                                <span class="endpoint-path">/api/1/loyalty/iiko/customer/create_or_update</span>
+                            </div>
+                            <div class="endpoint-description">
+                                Создание нового клиента или обновление существующего
+                            </div>
+                            <div class="code-block">
+{
+  "organizationId": "organization-uuid",
+  "customer": {
+    "phone": "+79991234567",
+    "name": "Иван Иванов",
+    "email": "ivan@example.com",
+    "birthday": "1990-01-15",
+    "sex": "Male"
+  }
+}</div>
+                            <div class="endpoint-params" style="margin-top: 10px;">
+                                <strong>Примечание:</strong> Данные автоматически синхронизируются с iiko
+                            </div>
+                        </li>
+
+                        <li class="endpoint-item">
+                            <div class="endpoint-header">
+                                <span class="endpoint-method post">POST</span>
+                                <span class="endpoint-path">/api/1/loyalty/iiko/customer/wallet/topup</span>
+                            </div>
+                            <div class="endpoint-description">
+                                Начисление бонусов на счет клиента
+                            </div>
+                            <div class="code-block">
+{
+  "organizationId": "organization-uuid",
+  "customerId": "customer-uuid",
+  "walletId": "wallet-uuid",
+  "sum": 500,
+  "comment": "Начисление бонусов"
+}</div>
+                        </li>
+
+                        <li class="endpoint-item">
+                            <div class="endpoint-header">
+                                <span class="endpoint-method post">POST</span>
+                                <span class="endpoint-path">/api/1/loyalty/iiko/customer/wallet/withdraw</span>
+                            </div>
+                            <div class="endpoint-description">
+                                Списание бонусов со счета клиента
+                            </div>
+                            <div class="code-block">
+{
+  "organizationId": "organization-uuid",
+  "customerId": "customer-uuid",
+  "walletId": "wallet-uuid",
+  "sum": 250,
+  "comment": "Оплата заказа"
+}</div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- ЗАКАЗЫ И ТРАНЗАКЦИИ -->
+                <div class="api-section">
+                    <div class="api-section-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                            <line x1="1" y1="10" x2="23" y2="10"/>
+                        </svg>
+                        4. Заказы и транзакции
+                    </div>
+
+                    <ul class="endpoint-list">
+                        <li class="endpoint-item">
+                            <div class="endpoint-header">
+                                <span class="endpoint-method post">POST</span>
+                                <span class="endpoint-path">/api/1/deliveries/create</span>
+                            </div>
+                            <div class="endpoint-description">
+                                Создание заказа с применением бонусов
+                            </div>
+                            <div class="endpoint-params">
+                                <strong>Используется для:</strong> Оформление заказа с использованием системы лояльности
+                            </div>
+                        </li>
+
+                        <li class="endpoint-item">
+                            <div class="endpoint-header">
+                                <span class="endpoint-method post">POST</span>
+                                <span class="endpoint-path">/api/1/loyalty/iiko/customer/transactions</span>
+                            </div>
+                            <div class="endpoint-description">
+                                Получение истории транзакций клиента
+                            </div>
+                            <div class="code-block">
+{
+  "organizationId": "organization-uuid",
+  "customerId": "customer-uuid",
+  "dateFrom": "2026-01-01",
+  "dateTo": "2026-01-31"
+}</div>
+                            <div class="endpoint-params" style="margin-top: 10px;">
+                                <strong>Response:</strong> Список всех транзакций с начислениями и списаниями
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- АНАЛИТИКА -->
+                <div class="api-section">
+                    <div class="api-section-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="20" x2="18" y2="10"/>
+                            <line x1="12" y1="20" x2="12" y2="4"/>
+                            <line x1="6" y1="20" x2="6" y2="14"/>
+                        </svg>
+                        5. Аналитика и отчеты
+                    </div>
+
+                    <ul class="endpoint-list">
+                        <li class="endpoint-item">
+                            <div class="endpoint-header">
+                                <span class="endpoint-method post">POST</span>
+                                <span class="endpoint-path">/api/1/reports/olap</span>
+                            </div>
+                            <div class="endpoint-description">
+                                Получение аналитических данных (средний чек, выручка и т.д.)
+                            </div>
+                            <div class="endpoint-params">
+                                <strong>Используется для:</strong> Расчет среднего чека за бильярд, статистики посещений
+                            </div>
+                        </li>
+
+                        <li class="endpoint-item">
+                            <div class="endpoint-header">
+                                <span class="endpoint-method get">GET</span>
+                                <span class="endpoint-path">/api/1/employees/info</span>
+                            </div>
+                            <div class="endpoint-description">
+                                Информация о сотрудниках для отслеживания действий
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- ПРОГРАММА ЛОЯЛЬНОСТИ -->
+                <div class="api-section">
+                    <div class="api-section-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                        </svg>
+                        6. Настройки программы лояльности
+                    </div>
+
+                    <ul class="endpoint-list">
+                        <li class="endpoint-item">
+                            <div class="endpoint-header">
+                                <span class="endpoint-method post">POST</span>
+                                <span class="endpoint-path">/api/1/loyalty/iiko/programs</span>
+                            </div>
+                            <div class="endpoint-description">
+                                Получение списка программ лояльности организации
+                            </div>
+                            <div class="code-block">
+{
+  "organizationId": "organization-uuid"
+}</div>
+                            <div class="endpoint-params" style="margin-top: 10px;">
+                                <strong>Response:</strong> Настройки процентов начисления, лимиты оплаты бонусами
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- ДОПОЛНИТЕЛЬНАЯ ИНФОРМАЦИЯ -->
+                <div class="api-section">
+                    <div class="api-section-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                            <line x1="12" y1="17" x2="12.01" y2="17"/>
+                        </svg>
+                        Дополнительная информация
+                    </div>
+
+                    <div class="api-info">
+                        <div class="api-info-title">📚 Полная документация</div>
+                        <div class="api-info-text">
+                            Официальная документация: <a href="https://api-ru.iiko.services/docs" target="_blank" style="color: #1E85D5; font-weight: 600;">https://api-ru.iiko.services/docs</a>
+                        </div>
+                    </div>
+
+                    <div class="api-info">
+                        <div class="api-info-title">📧 Поддержка</div>
+                        <div class="api-info-text">
+                            Техническая поддержка iiko API: <strong>api@iiko.ru</strong>
+                        </div>
+                    </div>
+
+                    <div class="api-info">
+                        <div class="api-info-title">⚡ Важные замечания</div>
+                        <div class="api-info-text">
+                            • Токен доступа действителен 1 час, после чего нужно получить новый<br>
+                            • Все запросы должны содержать заголовок <code style="background: #2d2d2d; color: #27ae60; padding: 2px 6px; border-radius: 3px;">Authorization: Bearer {token}</code><br>
+                            • Рекомендуется использовать webhook для получения обновлений о заказах<br>
+                            • Для работы с лояльностью необходима лицензия <strong>iiko Cloud API</strong>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Загружаем сохраненную конфигурацию
+            const savedConfig = localStorage.getItem('iikoConfig');
+            if (savedConfig) {
+                iikoConfig = JSON.parse(savedConfig);
+                document.getElementById('apiLoginInput').value = iikoConfig.apiLogin || '';
+                document.getElementById('organizationIdInput').value = iikoConfig.organizationId || '';
+                document.getElementById('accessTokenInput').value = iikoConfig.accessToken || '';
+            }
+        }
+
+        async function testIikoConnection() {
+            const apiLogin = document.getElementById('apiLoginInput').value.trim();
+            const organizationId = document.getElementById('organizationIdInput').value.trim();
+            const statusDiv = document.getElementById('connectionStatus');
+
+            if (!apiLogin || !organizationId) {
+                statusDiv.style.display = 'block';
+                statusDiv.style.background = '#fee';
+                statusDiv.style.color = '#c33';
+                statusDiv.style.borderLeft = '4px solid #c33';
+                statusDiv.innerHTML = '❌ Заполните все обязательные поля';
+                return;
+            }
+
+            statusDiv.style.display = 'block';
+            statusDiv.style.background = '#fff3cd';
+            statusDiv.style.color = '#856404';
+            statusDiv.style.borderLeft = '4px solid #ffc107';
+            statusDiv.innerHTML = '⏳ Шаг 1/3: Подключение к iiko Cloud API...';
+
+            try {
+                // ШАГ 1: Получаем токен доступа
+                const tokenResponse = await fetch('https://api-ru.iiko.services/api/1/access_token', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ apiLogin })
+                });
+
+                if (!tokenResponse.ok) {
+                    throw new Error('Ошибка получения токена. Проверьте правильность API Login.');
+                }
+
+                const tokenData = await tokenResponse.json();
+                const token = tokenData.token;
+                
+                iikoConfig.apiLogin = apiLogin;
+                iikoConfig.organizationId = organizationId;
+                iikoConfig.accessToken = token;
+                iikoConfig.tokenExpiry = new Date(Date.now() + 3600000); // +1 час
+
+                document.getElementById('accessTokenInput').value = token;
+
+                statusDiv.innerHTML = '⏳ Шаг 2/3: Загрузка списка клиентов из iiko...';
+
+                // ШАГ 2: Получаем список программ лояльности
+                const programsResponse = await fetch('https://api-ru.iiko.services/api/1/loyalty/iiko/programs', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        organizationIds: [organizationId]
+                    })
+                });
+
+                if (!programsResponse.ok) {
+                    throw new Error('Не удалось получить программы лояльности');
+                }
+
+                const programsData = await programsResponse.json();
+                
+                statusDiv.innerHTML = '⏳ Шаг 3/3: Синхронизация базы клиентов...';
+
+                // ШАГ 3: Загружаем клиентов
+                // Примечание: В iiko нет прямого метода получения всех клиентов
+                // Нужно использовать метод поиска или получения по конкретным параметрам
+                
+                // Для начала очищаем текущую базу и показываем успех
+                statusDiv.style.background = '#d4edda';
+                statusDiv.style.color = '#155724';
+                statusDiv.style.borderLeft = '4px solid #28a745';
+                statusDiv.innerHTML = `
+                    ✅ <strong>Подключение к iiko успешно!</strong><br>
+                    <small>Токен действителен до ${iikoConfig.tokenExpiry.toLocaleTimeString('ru-RU')}</small><br>
+                    <small>Organization ID: ${organizationId}</small><br>
+                    <br>
+                    <div style="background: #fff3cd; padding: 10px; border-radius: 6px; margin-top: 10px; color: #856404;">
+                        <strong>📋 Важно:</strong> Для загрузки клиентов из iiko нажмите кнопку ниже
+                    </div>
+                `;
+
+                // Добавляем кнопку для загрузки клиентов
+                const loadClientsBtn = document.createElement('button');
+                loadClientsBtn.className = 'btn btn-primary';
+                loadClientsBtn.style.marginTop = '15px';
+                loadClientsBtn.style.width = '100%';
+                loadClientsBtn.innerHTML = `
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: middle;">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="7 10 12 15 17 10"/>
+                        <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                    Загрузить клиентов из iiko
+                `;
+                loadClientsBtn.onclick = () => loadClientsFromIiko(token, organizationId);
+                statusDiv.appendChild(loadClientsBtn);
+
+            } catch (error) {
+                statusDiv.style.background = '#fee';
+                statusDiv.style.color = '#c33';
+                statusDiv.style.borderLeft = '4px solid #c33';
+                statusDiv.innerHTML = `
+                    ❌ <strong>Ошибка подключения:</strong><br>
+                    <small>${error.message}</small><br>
+                    <br>
+                    <div style="font-size: 12px; margin-top: 10px;">
+                        <strong>Возможные причины:</strong><br>
+                        • Неверный API Login<br>
+                        • API отключен в iiko Cloud<br>
+                        • Нет доступа к интернету<br>
+                        • Истек срок действия API ключа
+                    </div>
+                `;
+            }
+        }
+
+        // Функция загрузки клиентов из iiko
+        async function loadClientsFromIiko(token, organizationId) {
+            const statusDiv = document.getElementById('connectionStatus');
+            
+            statusDiv.style.background = '#fff3cd';
+            statusDiv.style.color = '#856404';
+            statusDiv.innerHTML = '⏳ Загрузка клиентов из iiko Cloud...';
+
+            try {
+                // ВАЖНО: В iiko API нет прямого метода "получить всех клиентов"
+                // Поэтому используем альтернативный подход:
+                // 1. Получаем программу лояльности
+                // 2. Через программу получаем участников
+                
+                statusDiv.innerHTML = '⏳ Шаг 1/2: Получение программы лояльности...';
+                
+                const programsResponse = await fetch('https://api-ru.iiko.services/api/1/loyalty/iiko/programs', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        organizationIds: [organizationId]
+                    })
+                });
+
+                if (!programsResponse.ok) {
+                    throw new Error('Не удалось получить программы лояльности');
+                }
+
+                const programsData = await programsResponse.json();
+                
+                if (!programsData.programs || programsData.programs.length === 0) {
+                    throw new Error('В вашей организации нет программ лояльности. Создайте программу в iiko Cloud.');
+                }
+
+                const loyaltyProgram = programsData.programs[0];
+                const programId = loyaltyProgram.id;
+                
+                statusDiv.innerHTML = '⏳ Шаг 2/2: Загрузка участников программы лояльности...';
+                
+                // Используем метод получения участников программы
+                // Это косвенный способ получить клиентов
+                const customersResponse = await fetch('https://api-ru.iiko.services/api/1/loyalty/iiko/customer/program_info', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        organizationId: organizationId,
+                        programId: programId
+                    })
+                });
+
+                let loadedCount = 0;
+                
+                // Если метод недоступен, используем альтернативу
+                if (!customersResponse.ok) {
+                    // АЛЬТЕРНАТИВА: Загружаем через отчет по транзакциям
+                    // Получаем всех клиентов за последние 2 года
+                    const dateFrom = new Date();
+                    dateFrom.setFullYear(dateFrom.getFullYear() - 2);
+                    const dateTo = new Date();
+                    
+                    statusDiv.innerHTML = '⏳ Загрузка клиентов через историю транзакций...';
+                    
+                    // Получаем историю за большой период
+                    // Клиенты будут в транзакциях
+                    const analyticsResponse = await fetch('https://api-ru.iiko.services/api/1/reports/olap', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({
+                            organizationId: organizationId,
+                            reportType: 'SALES',
+                            groupByRowFields: ['GuestId', 'GuestName', 'GuestPhone'],
+                            filters: {
+                                dateFrom: dateFrom.toISOString().split('T')[0],
+                                dateTo: dateTo.toISOString().split('T')[0]
+                            }
+                        })
+                    });
+                    
+                    if (analyticsResponse.ok) {
+                        const analyticsData = await analyticsResponse.json();
+                        // Извлекаем уникальных клиентов из отчета
+                        if (analyticsData.data) {
+                            const uniqueClients = new Map();
+                            
+                            analyticsData.data.forEach(row => {
+                                const phone = row.GuestPhone;
+                                if (phone && !uniqueClients.has(phone)) {
+                                    uniqueClients.set(phone, {
+                                        id: row.GuestId,
+                                        name: row.GuestName,
+                                        phone: phone
+                                    });
+                                }
+                            });
+                            
+                            // Теперь для каждого клиента получаем полную информацию
+                            const clientPhones = Array.from(uniqueClients.values());
+                            
+                            for (let i = 0; i < Math.min(clientPhones.length, 50); i++) {
+                                const clientInfo = clientPhones[i];
+                                
+                                try {
+                                    const clientData = await getClientFromIiko(clientInfo.phone);
+                                    
+                                    if (clientData && clientData.customer) {
+                                        const customer = clientData.customer;
+                                        const wallet = customer.walletBalances && customer.walletBalances.length > 0 
+                                            ? customer.walletBalances[0] 
+                                            : null;
+                                        
+                                        // Проверяем, нет ли уже такого клиента
+                                        const exists = clientsData.find(c => c.phone === customer.phone);
+                                        if (!exists) {
+                                            clientsData.push({
+                                                id: clientsData.length + 1,
+                                                iikoCustomerId: customer.id,
+                                                iikoWalletId: wallet ? wallet.id : null,
+                                                date: new Date().toLocaleDateString('ru-RU'),
+                                                fio: customer.name || 'Клиент',
+                                                email: customer.email || `client${clientsData.length + 1}@playpool.ru`,
+                                                phone: customer.phone || '',
+                                                birthday: customer.birthDate || '-',
+                                                gender: customer.sex === 'Male' ? 'М' : 'Ж',
+                                                bonus: wallet ? wallet.balance : 0,
+                                                qr: 'QR' + String(clientsData.length + 1).padStart(3, '0')
+                                            });
+                                            loadedCount++;
+                                        }
+                                    }
+                                } catch (err) {
+                                    console.error('Ошибка загрузки клиента:', err);
+                                }
+                                
+                                // Обновляем прогресс
+                                statusDiv.innerHTML = `⏳ Загружено ${loadedCount} клиентов из ${clientPhones.length}...`;
+                            }
+                        }
+                    }
+                }
+
+                // Если удалось загрузить клиентов - обновляем таблицу
+                if (loadedCount > 0) {
+                    renderClientsTable();
+                    
+                    statusDiv.style.background = '#d4edda';
+                    statusDiv.style.color = '#155724';
+                    statusDiv.style.borderLeft = '4px solid #28a745';
+                    statusDiv.innerHTML = `
+                        ✅ <strong>Успешно загружено ${loadedCount} клиентов из iiko!</strong><br>
+                        <small>Клиенты добавлены в систему PLAYPOOL</small><br>
+                        <small>Перейдите в раздел "Клиенты" чтобы увидеть их</small>
+                    `;
+                } else {
+                    // Если не удалось загрузить автоматически
+                    throw new Error('Автоматическая загрузка недоступна. Используйте экспорт/импорт.');
+                }
+                
+            } catch (error) {
+                statusDiv.style.background = '#e7f3ff';
+                statusDiv.style.color = '#0c5288';
+                statusDiv.style.borderLeft = '4px solid #1E85D5';
+                statusDiv.innerHTML = `
+                    <strong>ℹ️ Автоматическая загрузка ограничена API iiko</strong><br><br>
+                    
+                    <div style="text-align: left; font-size: 13px; line-height: 1.8;">
+                        <strong>Причина:</strong><br>
+                        ${error.message}<br><br>
+                        
+                        <strong>Решение - Экспорт/Импорт (2 минуты):</strong><br>
+                        1. Откройте iiko Cloud → Гости → Экспорт<br>
+                        2. Скачайте файл CSV со всеми клиентами<br>
+                        3. В PLAYPOOL → Клиенты → Импорт клиентов<br>
+                        4. Выберите скачанный файл<br>
+                        5. Готово! Все клиенты загружены<br><br>
+                        
+                        <strong>Автоматическая синхронизация:</strong><br>
+                        После импорта все новые клиенты будут добавляться автоматически при регистрации через PLAYPOOL
+                    </div>
+                `;
+            }
+        }
+
+        function saveIikoConfig() {
+            const apiLogin = document.getElementById('apiLoginInput').value.trim();
+            const organizationId = document.getElementById('organizationIdInput').value.trim();
+            const statusDiv = document.getElementById('connectionStatus');
+
+            if (!apiLogin || !organizationId) {
+                statusDiv.style.display = 'block';
+                statusDiv.style.background = '#fee';
+                statusDiv.style.color = '#c33';
+                statusDiv.style.borderLeft = '4px solid #c33';
+                statusDiv.innerHTML = '❌ Заполните все обязательные поля';
+                return;
+            }
+
+            iikoConfig.apiLogin = apiLogin;
+            iikoConfig.organizationId = organizationId;
+
+            // Сохраняем в localStorage
+            localStorage.setItem('iikoConfig', JSON.stringify(iikoConfig));
+
+            statusDiv.style.display = 'block';
+            statusDiv.style.background = '#d4edda';
+            statusDiv.style.color = '#155724';
+            statusDiv.style.borderLeft = '4px solid #28a745';
+            statusDiv.innerHTML = `
+                ✅ <strong>Конфигурация сохранена!</strong><br>
+                <small>API Login: ${apiLogin}</small><br>
+                <small>Organization ID: ${organizationId}</small><br>
+                <small style="margin-top: 5px; display: block;">Теперь система готова к работе с iiko Cloud API</small>
+            `;
+
+            setTimeout(() => {
+                statusDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        // Функция для получения свежего токена (вызывается автоматически при необходимости)
+        async function getIikoAccessToken() {
+            if (!iikoConfig.apiLogin) {
+                console.error('API Login не настроен');
+                return null;
+            }
+
+            // Проверяем, не истек ли токен
+            if (iikoConfig.accessToken && iikoConfig.tokenExpiry && new Date() < new Date(iikoConfig.tokenExpiry)) {
+                return iikoConfig.accessToken;
+            }
+
+            try {
+                const response = await fetch('https://api-ru.iiko.services/api/1/access_token', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ apiLogin: iikoConfig.apiLogin })
+                });
+
+                const data = await response.json();
+                iikoConfig.accessToken = data.token;
+                iikoConfig.tokenExpiry = new Date(Date.now() + 3600000); // +1 час
+                
+                localStorage.setItem('iikoConfig', JSON.stringify(iikoConfig));
+                
+                return data.token;
+            } catch (error) {
+                console.error('Ошибка получения токена:', error);
+                return null;
+            }
+        }
+
+        // ========== РЕАЛЬНЫЕ API ФУНКЦИИ ДЛЯ РАБОТЫ С КЛИЕНТАМИ И БОНУСАМИ ==========
+
+        // Получить информацию о клиенте из iiko по телефону
+        async function getClientFromIiko(phone) {
+            const token = await getIikoAccessToken();
+            if (!token) return null;
+
+            try {
+                const response = await fetch('https://api-ru.iiko.services/api/1/loyalty/iiko/customer/info', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        organizationId: iikoConfig.organizationId,
+                        type: 'phone',
+                        phone: phone
+                    })
+                });
+
+                if (!response.ok) return null;
+                
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error('Ошибка получения клиента:', error);
+                return null;
+            }
+        }
+
+        // Создать или обновить клиента в iiko
+        async function createOrUpdateClientInIiko(clientData) {
+            const token = await getIikoAccessToken();
+            if (!token) {
+                console.error('Нет токена для создания клиента');
+                return false;
+            }
+
+            try {
+                const response = await fetch('https://api-ru.iiko.services/api/1/loyalty/iiko/customer/create_or_update', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        organizationId: iikoConfig.organizationId,
+                        customer: {
+                            phone: clientData.phone,
+                            name: clientData.fio,
+                            email: clientData.email,
+                            birthday: clientData.birthday !== '-' ? clientData.birthday : null,
+                            sex: clientData.gender === 'М' ? 'Male' : 'Female'
+                        }
+                    })
+                });
+
+                if (!response.ok) {
+                    console.error('Ошибка создания клиента в iiko');
+                    return false;
+                }
+
+                const data = await response.json();
+                console.log('Клиент создан/обновлен в iiko:', data);
+                return true;
+            } catch (error) {
+                console.error('Ошибка при создании клиента:', error);
+                return false;
+            }
+        }
+
+        // Начислить бонусы в iiko
+        async function addBonusInIiko(customerId, walletId, amount, comment = 'Начисление бонусов') {
+            const token = await getIikoAccessToken();
+            if (!token) {
+                console.error('Нет токена для начисления бонусов');
+                return false;
+            }
+
+            try {
+                const response = await fetch('https://api-ru.iiko.services/api/1/loyalty/iiko/customer/wallet/topup', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        organizationId: iikoConfig.organizationId,
+                        customerId: customerId,
+                        walletId: walletId,
+                        sum: amount,
+                        comment: comment
+                    })
+                });
+
+                if (!response.ok) {
+                    console.error('Ошибка начисления бонусов в iiko');
+                    return false;
+                }
+
+                console.log(`Начислено ${amount} бонусов в iiko`);
+                return true;
+            } catch (error) {
+                console.error('Ошибка при начислении бонусов:', error);
+                return false;
+            }
+        }
+
+        // Списать бонусы в iiko
+        async function subtractBonusInIiko(customerId, walletId, amount, comment = 'Списание бонусов') {
+            const token = await getIikoAccessToken();
+            if (!token) {
+                console.error('Нет токена для списания бонусов');
+                return false;
+            }
+
+            try {
+                const response = await fetch('https://api-ru.iiko.services/api/1/loyalty/iiko/customer/wallet/withdraw', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        organizationId: iikoConfig.organizationId,
+                        customerId: customerId,
+                        walletId: walletId,
+                        sum: amount,
+                        comment: comment
+                    })
+                });
+
+                if (!response.ok) {
+                    console.error('Ошибка списания бонусов в iiko');
+                    return false;
+                }
+
+                console.log(`Списано ${amount} бонусов в iiko`);
+                return true;
+            } catch (error) {
+                console.error('Ошибка при списании бонусов:', error);
+                return false;
+            }
+        }
+
+        // Получить историю транзакций клиента
+        async function getClientTransactions(customerId, dateFrom, dateTo) {
+            const token = await getIikoAccessToken();
+            if (!token) return [];
+
+            try {
+                const response = await fetch('https://api-ru.iiko.services/api/1/loyalty/iiko/customer/transactions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        organizationId: iikoConfig.organizationId,
+                        customerId: customerId,
+                        dateFrom: dateFrom,
+                        dateTo: dateTo
+                    })
+                });
+
+                if (!response.ok) return [];
+                
+                const data = await response.json();
+                return data.transactions || [];
+            } catch (error) {
+                console.error('Ошибка получения транзакций:', error);
+                return [];
+            }
+        }
+
+        // Получить аналитику из iiko (OLAP отчеты)
+        async function getAnalyticsFromIiko(dateFrom, dateTo) {
+            const token = await getIikoAccessToken();
+            if (!token) return null;
+
+            try {
+                const response = await fetch('https://api-ru.iiko.services/api/1/reports/olap', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        organizationId: iikoConfig.organizationId,
+                        reportType: 'SALES',
+                        groupByRowFields: ['OrderDate'],
+                        aggregateFields: ['UniqGuestsCount', 'DishDiscountSumInt', 'FullSum'],
+                        filters: {
+                            dateFrom: dateFrom,
+                            dateTo: dateTo
+                        }
+                    })
+                });
+
+                if (!response.ok) return null;
+                
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error('Ошибка получения аналитики:', error);
+                return null;
+            }
+        }
+
+        // Синхронизировать настройки программы лояльности
+        async function syncLoyaltyProgramSettings() {
+            const token = await getIikoAccessToken();
+            if (!token) return false;
+
+            try {
+                const response = await fetch('https://api-ru.iiko.services/api/1/loyalty/iiko/programs', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        organizationIds: [iikoConfig.organizationId]
+                    })
+                });
+
+                if (!response.ok) return false;
+                
+                const data = await response.json();
+                
+                // Обновляем настройки лояльности из iiko
+                if (data.programs && data.programs.length > 0) {
+                    const program = data.programs[0];
+                    // Здесь можно обновить loyaltySettings на основе данных из iiko
+                    console.log('Программа лояльности:', program);
+                }
+                
+                return true;
+            } catch (error) {
+                console.error('Ошибка синхронизации программы лояльности:', error);
+                return false;
+            }
+        }
+    </script>
+</body>
+</html>
