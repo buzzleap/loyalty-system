@@ -1,0 +1,13 @@
+{
+  "name": "playpool-loyalty-system",
+  "version": "1.0.0",
+  "description": "PLAYPOOL Loyalty System with iiko Cloud API integration",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.0"
+  }
+}

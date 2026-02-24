@@ -3283,7 +3283,7 @@
 
             try {
                 // ШАГ 1: Получаем токен доступа
-                const tokenResponse = await fetch('https://api-ru.iiko.services/api/1/access_token', {
+                const tokenResponse = await fetch('/api/iiko/access_token', {
                     method: 'POST',
                     headers: { 
                         'Content-Type': 'application/json',
@@ -3308,7 +3308,7 @@
                 statusDiv.innerHTML = '⏳ Шаг 2/3: Загрузка списка клиентов из iiko...';
 
                 // ШАГ 2: Получаем список программ лояльности
-                const programsResponse = await fetch('https://api-ru.iiko.services/api/1/loyalty/iiko/programs', {
+                const programsResponse = await fetch('/api/iiko/loyalty/iiko/programs', {
                     method: 'POST',
                     headers: { 
                         'Content-Type': 'application/json',
@@ -3396,7 +3396,7 @@
                 
                 statusDiv.innerHTML = '⏳ Шаг 1/2: Получение программы лояльности...';
                 
-                const programsResponse = await fetch('https://api-ru.iiko.services/api/1/loyalty/iiko/programs', {
+                const programsResponse = await fetch('/api/iiko/loyalty/iiko/programs', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -3424,7 +3424,7 @@
                 
                 // Используем метод получения участников программы
                 // Это косвенный способ получить клиентов
-                const customersResponse = await fetch('https://api-ru.iiko.services/api/1/loyalty/iiko/customer/program_info', {
+                const customersResponse = await fetch('/api/iiko/loyalty/iiko/customer/program_info', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -3450,7 +3450,7 @@
                     
                     // Получаем историю за большой период
                     // Клиенты будут в транзакциях
-                    const analyticsResponse = await fetch('https://api-ru.iiko.services/api/1/reports/olap', {
+                    const analyticsResponse = await fetch('/api/iiko/reports/olap', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -3620,7 +3620,7 @@
             }
 
             try {
-                const response = await fetch('https://api-ru.iiko.services/api/1/access_token', {
+                const response = await fetch('/api/iiko/access_token', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ apiLogin: iikoConfig.apiLogin })
@@ -3647,7 +3647,7 @@
             if (!token) return null;
 
             try {
-                const response = await fetch('https://api-ru.iiko.services/api/1/loyalty/iiko/customer/info', {
+                const response = await fetch('/api/iiko/loyalty/iiko/customer/info', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -3679,7 +3679,7 @@
             }
 
             try {
-                const response = await fetch('https://api-ru.iiko.services/api/1/loyalty/iiko/customer/create_or_update', {
+                const response = await fetch('/api/iiko/loyalty/iiko/customer/create_or_update', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -3720,7 +3720,7 @@
             }
 
             try {
-                const response = await fetch('https://api-ru.iiko.services/api/1/loyalty/iiko/customer/wallet/topup', {
+                const response = await fetch('/api/iiko/loyalty/iiko/customer/wallet/topup', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -3757,7 +3757,7 @@
             }
 
             try {
-                const response = await fetch('https://api-ru.iiko.services/api/1/loyalty/iiko/customer/wallet/withdraw', {
+                const response = await fetch('/api/iiko/loyalty/iiko/customer/wallet/withdraw', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -3791,7 +3791,7 @@
             if (!token) return [];
 
             try {
-                const response = await fetch('https://api-ru.iiko.services/api/1/loyalty/iiko/customer/transactions', {
+                const response = await fetch('/api/iiko/loyalty/iiko/customer/transactions', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -3821,7 +3821,7 @@
             if (!token) return null;
 
             try {
-                const response = await fetch('https://api-ru.iiko.services/api/1/reports/olap', {
+                const response = await fetch('/api/iiko/reports/olap', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -3855,7 +3855,7 @@
             if (!token) return false;
 
             try {
-                const response = await fetch('https://api-ru.iiko.services/api/1/loyalty/iiko/programs', {
+                const response = await fetch('/api/iiko/loyalty/iiko/programs', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
