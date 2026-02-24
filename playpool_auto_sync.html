@@ -3292,12 +3292,17 @@
                 });
 
                 if (!tokenResponse.ok) {
-                    throw new Error('Ошибка получения токена. Проверьте правильность API Login.');
+                    const errText = await tokenResponse.text();
+                    throw new Error(`Ошибка получения токена (HTTP ${tokenResponse.status}): ${errText || 'Проверьте правильность API Login.'}`);
                 }
 
                 const tokenData = await tokenResponse.json();
-                const token = tokenData.token;
-                
+                const token = typeof tokenData === 'string' ? tokenData : tokenData.token;
+
+                if (!token) {
+                    throw new Error('Токен не найден в ответе iiko. Ответ: ' + JSON.stringify(tokenData));
+                }
+
                 iikoConfig.apiLogin = apiLogin;
                 iikoConfig.organizationId = organizationId;
                 iikoConfig.accessToken = token;
@@ -3305,12 +3310,12 @@
 
                 document.getElementById('accessTokenInput').value = token;
 
-                statusDiv.innerHTML = '⏳ Шаг 2/3: Загрузка списка клиентов из iiko...';
+                statusDiv.innerHTML = '⏳ Шаг 2/3: Загрузка программ лояльности из iiko...';
 
                 // ШАГ 2: Получаем список программ лояльности
                 const programsResponse = await fetch('/api/iiko/loyalty/iiko/programs', {
                     method: 'POST',
-                    headers: { 
+                    headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`
                     },
@@ -3320,7 +3325,8 @@
                 });
 
                 if (!programsResponse.ok) {
-                    throw new Error('Не удалось получить программы лояльности');
+                    const errBody = await programsResponse.text();
+                    throw new Error(`Не удалось получить программы лояльности (HTTP ${programsResponse.status}): ${errBody}`);
                 }
 
                 const programsData = await programsResponse.json();
@@ -3408,11 +3414,12 @@
                 });
 
                 if (!programsResponse.ok) {
-                    throw new Error('Не удалось получить программы лояльности');
+                    const errBody = await programsResponse.text();
+                    throw new Error(`Не удалось получить программы лояльности (HTTP ${programsResponse.status}): ${errBody}`);
                 }
 
                 const programsData = await programsResponse.json();
-                
+
                 if (!programsData.programs || programsData.programs.length === 0) {
                     throw new Error('В вашей организации нет программ лояльности. Создайте программу в iiko Cloud.');
                 }

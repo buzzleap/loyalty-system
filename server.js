@@ -38,6 +38,11 @@ app.post('/api/iiko/*', async (req, res) => {
 
         const data = await response.text();
 
+        // Log non-OK responses for debugging
+        if (!response.ok) {
+            console.error(`iiko API error [${iikoPath}]: HTTP ${response.status} — ${data.substring(0, 500)}`);
+        }
+
         // Forward the status code and response
         res.status(response.status);
         res.set('Content-Type', response.headers.get('content-type') || 'application/json');
