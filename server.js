@@ -5,8 +5,13 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 
-// Serve the main HTML file
+// Serve static files
 app.use(express.static(path.join(__dirname)));
+
+// Main page — redirect to the actual HTML file
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'playpool_auto_sync.html'));
+});
 
 // Generic proxy for all iiko API calls
 // Frontend calls /api/iiko/* → server forwards to https://api-ru.iiko.services/api/1/*
