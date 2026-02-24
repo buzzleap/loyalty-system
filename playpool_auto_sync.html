@@ -3320,7 +3320,7 @@
                         'Authorization': `Bearer ${token}`
                     },
                     body: JSON.stringify({
-                        organizationIds: [organizationId]
+                        organizationId: organizationId
                     })
                 });
 
@@ -3330,7 +3330,7 @@
                 }
 
                 const programsData = await programsResponse.json();
-                
+
                 statusDiv.innerHTML = '⏳ Шаг 3/3: Синхронизация базы клиентов...';
 
                 // ШАГ 3: Загружаем клиентов
@@ -3409,7 +3409,7 @@
                         'Authorization': `Bearer ${token}`
                     },
                     body: JSON.stringify({
-                        organizationIds: [organizationId]
+                        organizationId: organizationId
                     })
                 });
 
@@ -3869,7 +3869,7 @@
                         'Authorization': `Bearer ${token}`
                     },
                     body: JSON.stringify({
-                        organizationIds: [iikoConfig.organizationId]
+                        organizationId: iikoConfig.organizationId
                     })
                 });
 
