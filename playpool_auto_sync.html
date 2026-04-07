@@ -3432,28 +3432,13 @@
                 const loyaltyProgram = programsList[0];
                 const programId = loyaltyProgram.id;
                 
-                statusDiv.innerHTML = '⏳ Шаг 2/2: Загрузка участников программы лояльности...';
-                
-                // Используем метод получения участников программы
-                // Это косвенный способ получить клиентов
-                const customersResponse = await fetch('/api/iiko/loyalty/iiko/customer/program_info', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify({
-                        organizationId: organizationId,
-                        programId: programId
-                    })
-                });
+                statusDiv.innerHTML = '⏳ Шаг 2/2: Загрузка клиентов через историю транзакций...';
 
                 let loadedCount = 0;
-                
-                // Если метод недоступен, используем альтернативу
-                if (!customersResponse.ok) {
-                    // АЛЬТЕРНАТИВА: Загружаем через отчет по транзакциям
-                    // Получаем всех клиентов за последние 2 года
+
+                // iiko API не имеет метода "получить всех клиентов"
+                // Загружаем через OLAP-отчёт — получаем телефоны из истории заказов
+                {
                     const dateFrom = new Date();
                     dateFrom.setFullYear(dateFrom.getFullYear() - 2);
                     const dateTo = new Date();
@@ -3769,7 +3754,7 @@
             }
 
             try {
-                const response = await fetch('/api/iiko/loyalty/iiko/customer/wallet/withdraw', {
+                const response = await fetch('/api/iiko/loyalty/iiko/customer/wallet/chargeoff', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -3798,6 +3783,8 @@
         }
 
         // Получить историю транзакций клиента
+        // ПРИМЕЧАНИЕ: endpoint /loyalty/iiko/customer/transactions НЕ существует в iiko Cloud API
+        // Функция оставлена для совместимости, но вернёт пустой массив
         async function getClientTransactions(customerId, dateFrom, dateTo) {
             const token = await getIikoAccessToken();
             if (!token) return [];
@@ -3867,7 +3854,7 @@
             if (!token) return false;
 
             try {
-                const response = await fetch('/api/iiko/loyalty/iiko/programs', {
+                const response = await fetch('/api/iiko/loyalty/iiko/program', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
